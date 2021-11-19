@@ -2,6 +2,10 @@ import pygame
 from Vision import *
 
 WHITE = (255, 255, 255)
+
+alive = True
+FPS = 30
+
 def main():
     """Главная функция главного модуля.
     Создаёт объекты графического дизайна библиотеки tkinter: окно, холст, фрейм с кнопками, кнопки.
@@ -15,6 +19,7 @@ def main():
     global start_button
     global perform_execution
     global timer
+    global alive
 
     print('Modelling started!')
     physical_time = 0
@@ -28,12 +33,16 @@ def main():
     drawer = Drawer(screen)
     #menu, box, timer = init_ui(screen)
     #write_to_stats()
-    while not finished:
+
+    pygame.display.update()
+    clock = pygame.time.Clock()
+    while alive:
+        clock.tick(FPS)
         #handle_events(pg.event.get(), menu)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                finished = True
+                alive = False
 
         #drawer.update(objects, box)
         pygame.display.update()
