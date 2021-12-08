@@ -6,6 +6,7 @@ import pymunk
 import pymunk.pygame_util
 from pymunk.vec2d import Vec2d
 
+
 pygame.init()
 screen = pygame.display.set_mode((1200, 600))
 clock = pygame.time.Clock()
@@ -19,6 +20,11 @@ draw_options = pymunk.pygame_util.DrawOptions(screen)
 box_size = 200
 w = screen.get_width()
 h = screen.get_height()
+pear = pygame.image.load('боксёрская груша.jpg')
+pear_rect = pear.get_rect(bottomright=(400, 300))
+screen.blit(pear, pear_rect)
+
+pygame.display.update()
 
 
 def add_ball(space, pos, box_offset):
@@ -31,36 +37,32 @@ def add_ball(space, pos, box_offset):
     return body
 
 
-
-
 def add_lever(space, pos, box_offset):
     body = pymunk.Body()
     body.position = pos + Vec2d(*box_offset) + (0, -20)
-    shape = pymunk.Segment(body, (0, 60), (0, -60), 5)
+    shape = pymunk.Segment(body, (0, 60), (0, -60), 50)
     shape.mass = 1
     shape.friction = 0.7
     space.add(body, shape)
     return body
 
 
-txts = {}
+#txts = {}
 
 box_offset = 0, 0
 b1 = add_lever(space, (550, 100), box_offset)
 b2 = add_ball(space, (650, 0), box_offset)
 c: pymunk.Constraint = pymunk.PinJoint(b1, b2, (0, 60), (-20, 0))
-space.add(pymunk.PivotJoint(b2, space.static_body, (650, 0) + Vec2d(*box_offset)))
-txts[box_offset] = inspect.getdoc(c)
+space.add(pymunk.PivotJoint(b2, space.static_body, (650, 0) + Vec2d(*box_offset)))  # Связывает точку вращения груши и шарик, к которому груша привешена
+#txts[box_offset] = inspect.getdoc(c)
 space.add(c)
 
-
-
-# TODO add one or two advanced constraints examples, such as a car or rope
 
 mouse_joint = None
 mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
 
+#pymunk.lib.cpBodyApplyForceAtWorldPoint(b1, [20, 20], [550, 100])
 
 while True:
     for event in pygame.event.get():
@@ -91,6 +93,7 @@ while True:
                 space.add(mouse_joint)
 
         elif event.type == pygame.MOUSEBUTTONUP:
+            b1.apply_impulse_at_local_point((2000, 0))
             if mouse_joint is not None:
                 space.remove(mouse_joint)
                 mouse_joint = None
