@@ -1,6 +1,7 @@
-import inspect
-import math
 import pygame
+'''import inspect
+import math
+
 from pygame.draw import circle
 import pymunk
 import pymunk.pygame_util
@@ -24,9 +25,19 @@ pear = pygame.image.load('боксёрская груша.jpg')
 pear_rect = pear.get_rect(bottomright=(400, 300))
 screen.blit(pear, pear_rect)
 
-pygame.display.update()
+pygame.display.update()'''
+print(1)  # Проверка на то, что Тренажёрный зал выполняет всё, что написано в этом модул
 
+class Pear(pygame.sprite.Sprite):
+    def __init__(self, x, filename):
+        """Боксёрская груша, пользователь будет ставить её представителей, куда ему захочется,
+         и возможно, что будут разные картинки.
+         filename: название файла-картинки груши"""
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(filename).convert_alpha()  # Графическое представление спрайта
+        self.rect = self.image.get_rect(center = (x, 200))  # Положение и размер спрайта
 
+'''
 def add_ball(space, pos, box_offset):
     body = pymunk.Body()
     body.position = Vec2d(*pos) + box_offset
@@ -113,4 +124,7 @@ while True:
     pygame.display.flip()
 
     clock.tick(60)
-    pygame.display.set_caption(f"fps: {clock.get_fps()}")
+    pygame.display.set_caption(f"fps: {clock.get_fps()}")'''
+
+if __name__ == 'main':
+    print("This module is not for direct call!")

@@ -1,17 +1,20 @@
-import pygame
 import pymunk.pygame_util
+import pygame
 from human import *
-
+from Груша import Pear
 
 alive = True
 WHITE = (255, 255, 255)
 
 pygame.init()
-screen = pygame.display.set_mode((1000, 600))
+W = 1000
+H = 600
+screen = pygame.display.set_mode((W, H))
 space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 16)
 draw_options = pymunk.pygame_util.DrawOptions(screen)
+
 
 def walls():
     floor_shape = pymunk.Segment(space.static_body, (0, 600), (1000, 600), 50)
@@ -27,11 +30,8 @@ def walls():
     space.add(roof_shape)
 
 create_Human()
-
 walls()
-'''ch = space.add_collision_handler(0, 0)
-ch.data["surface"] = screen
-ch.post_solve = draw_collision'''
+p1 = Pear(W//2, 'боксёрская груша.jpg')
 
 while alive:
     for event in pygame.event.get():
@@ -41,6 +41,7 @@ while alive:
 
 
     screen.fill(WHITE)
+    screen.blit(p1.image, p1.rect)
     space.step(1 / 50)  # Независимый цикл пересчитывающий физику
     space.debug_draw(draw_options)
     pygame.display.update()
