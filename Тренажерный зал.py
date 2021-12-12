@@ -1,5 +1,6 @@
-import pymunk.pygame_util
-# import pygame
+from pymunk.pygame_util import *
+
+
 from human import *
 from Груша import Pear
 from typing import List
@@ -12,7 +13,7 @@ W = 1000
 H = 700
 screen = pygame.display.set_mode((W, H))
 space = pymunk.Space()
-space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
+space.gravity = (0, 900)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 16)
 draw_options = pymunk.pygame_util.DrawOptions(screen)
@@ -41,8 +42,11 @@ def walls():
     roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
     space.add(roof_shape)
 
+humans = []
+active_shape = None
 
 h1 = Human(space)
+humans.append(h1)
 h1.create_Human()
 walls()
 
@@ -62,12 +66,27 @@ while alive:
         mouse_joint = p1.check_event_pear(event, mouse_joint, mouse_body)
         h1.check_event_human(event)
 
+
         if event.type == pygame.QUIT:
             alive = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            p = from_pygame(event.pos, screen)
+            active_shape = None
+            for s in space.shapes:
+                if type(s) is pymunk.shapes.Poly:
+                    dist = s.point_query(p)[2]
+                    if dist < 0:
+                        active_shape = s
+
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             alive = False
         elif event.type == pygame.MOUSEMOTION:
             mouse_pos = pymunk.pygame_util.get_mouse_pos(screen)
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
+            s = active_shape
+            if s != None:
+                space.remove(s, s.body)
+                active_shape = None
 
     screen.fill(WHITE)
     work_with_items(items)
