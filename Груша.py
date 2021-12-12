@@ -1,36 +1,12 @@
 import pygame
 import pymunk
+import math
 from pymunk.vec2d import Vec2d
+
 
 #space = pymunk.Space()
 #space.gravity = (0.0, 900.0)
-'''import inspect
-import math
 
-from pygame.draw import circle
-import pymunk
-import pymunk.pygame_util
-from pymunk.vec2d import Vec2d
-
-
-pygame.init()
-screen = pygame.display.set_mode((1200, 600))
-clock = pygame.time.Clock()
-font = pygame.font.Font(None, 24)
-
-space = pymunk.Space()
-space.gravity = (0.0, 900.0)
-draw_options = pymunk.pygame_util.DrawOptions(screen)
-
-# containers
-box_size = 200
-w = screen.get_width()
-h = screen.get_height()
-pear = pygame.image.load('боксёрская груша.jpg')
-pear_rect = pear.get_rect(bottomright=(400, 300))
-screen.blit(pear, pear_rect)
-
-pygame.display.update()'''
 print(1)  # Проверка на то, что Тренажёрный зал выполняет всё, что написано в этом модуле
 
 class Pear(pygame.sprite.Sprite):
@@ -44,11 +20,12 @@ class Pear(pygame.sprite.Sprite):
         self.space = space
         self.box_offset = 0, 0
         self.b1 = self.add_lever(space, (550, 100))
-        self.b2 = self.add_ball(space, (650, 0))
-        c: pymunk.Constraint = pymunk.PinJoint(self.b1, self.b2, (0, 60), (-20, 0))
-        space.add(pymunk.PivotJoint(self.b2, space.static_body, (650, 0) + Vec2d(
-            *self.box_offset)))  # Связывает точку вращения груши и шарик, к которому груша привешена
-        space.add(c)
+        #self.b2 = self.add_ball(space, (650, 0))
+        #c: pymunk.Constraint = pymunk.PinJoint(self.b1, self.b2, (0, 60), (-20, 0))
+        #space.add(pymunk.PivotJoint(self.b2, space.static_body, (650, 0) + Vec2d(
+           # *self.box_offset)))  # Связывает точку вращения груши и шарик, к которому груша привешена
+        #space.add(c)
+        self.logo_img = pygame.image.load("груша.png")
 
     def add_ball(self, space, pos):
         body = pymunk.Body()
@@ -60,24 +37,52 @@ class Pear(pygame.sprite.Sprite):
         return body
 
     def add_lever(self, space, pos):
-        body = pymunk.Body()
-        body.position = pos + Vec2d(*self.box_offset) + (0, -20)
-        shape = pymunk.Segment(body, (0, 60), (0, -60), 50)
-        shape.mass = 1
-        shape.friction = 0.7
-        space.add(body, shape)
+        mass = 100
+        vs = [(-30, 270), (30, 270), (30, 0), (-30, 0)]
+
+        moment = pymunk.moment_for_poly(mass, vs)
+        body = pymunk.Body(mass, moment)
+        body.position = pos + Vec2d(*self.box_offset)
+        self.shape = pymunk.Poly(body, vs)
+        self.shape.friction = 1
+        rotation_center_body = pymunk.Body(body_type=pymunk.Body.STATIC)
+        rotation_center_body.position = body.position
+        rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0, 0), (0, 0))
+
+        space.add(rotation_center_joint)
+
+        space.add(body, self.shape)
+        #logos.append(shape)
         return body
+
+    def work_with_logo(self):
+        p = self.shape.body.position  # Остаётся постоянным 650,200
+        p = Vec2d(p.x, p.y)
+
+        # we need to rotate 180 degrees because of the y coordinate flip
+        angle_degrees = -math.degrees(self.shape.body.angle)
+        rotated_logo_img = pygame.transform.rotate(self.image, angle_degrees)
+
+        # debug draw
+        ps = [
+            p.rotated(self.shape.body.angle) + self.shape.body.position
+            for p in self.shape.get_vertices()]
+
+        ps = [(round(p.x), round(p.y)) for p in ps]
+        ps += [ps[0]]
+        #pygame.draw.lines(screen, pygame.Color("red"), False, ps, 1)  В главом цикле тренажёрного зала
+
+        offset_x = rotated_logo_img.get_rect().size[0] / 2
+        offset_y = rotated_logo_img.get_rect().size[1] / 2
+        offset = Vec2d(offset_x, offset_y)
+        offset2 = (Vec2d(*ps[1] - self.shape.body.position) + Vec2d(*ps[3] - self.shape.body.position)) / 2
+        p = p - Vec2d(*offset) + offset2
+        return rotated_logo_img, p, ps
+        #screen.blit(rotated_logo_img, (round(p.x), round(p.y)))    В главом цикле тренажёрного зала
 
     def update(self, *args):
         pass
 
-    def smth(self):
-        '''b1 = self.add_lever(space, (550, 100))
-        b2 = self.add_ball(space, (650, 0))
-        c: pymunk.Constraint = pymunk.PinJoint(b1, b2, (0, 60), (-20, 0))
-        space.add(pymunk.PivotJoint(b2, space.static_body, (650, 0) + Vec2d(*self.box_offset)))  # Связывает точку вращения груши и шарик, к которому груша привешена
-        #txts[box_offset] = inspect.getdoc(c)
-        space.add(c)'''
 
     def check_event_pear(self, event):
         mouse_joint = None
@@ -109,29 +114,7 @@ class Pear(pygame.sprite.Sprite):
             if mouse_joint is not None:
                 self.space.remove(mouse_joint)
                 mouse_joint = None
-'''
-def add_ball(space, pos, box_offset):
-    body = pymunk.Body()
-    body.position = Vec2d(*pos) + box_offset
-    shape = pymunk.Circle(body, 20)
-    shape.mass = 1
-    shape.friction = 0.7
-    space.add(body, shape)
-    return body
 
-
-def add_lever(space, pos, box_offset):
-    body = pymunk.Body()
-    body.position = pos + Vec2d(*box_offset) + (0, -20)
-    shape = pymunk.Segment(body, (0, 60), (0, -60), 50)
-    shape.mass = 1
-    shape.friction = 0.7
-    space.add(body, shape)
-    return body
-
-
-#txts = {}
-'''
 
 
 

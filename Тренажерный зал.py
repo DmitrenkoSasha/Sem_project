@@ -2,6 +2,7 @@ import pymunk.pygame_util
 #import pygame
 from human import *
 from Груша import Pear
+from typing import List
 
 alive = True
 WHITE = (255, 255, 255)
@@ -16,6 +17,14 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 16)
 draw_options = pymunk.pygame_util.DrawOptions(screen)
 
+logos: List[pymunk.Shape] = []
+
+def work_with_items(items):
+    for item in items:
+        if type(item) is Pear:
+            rotated_logo_img, p, ps = item.work_with_logo()
+            screen.blit(rotated_logo_img, (round(p.x), round(p.y)))
+            pygame.draw.lines(screen, pygame.Color("red"), False, ps, 1)
 
 def walls():
     floor_shape = pymunk.Segment(space.static_body, (0, 600), (1000, 600), 50)
@@ -36,12 +45,16 @@ walls()
 items = pygame.sprite.Group()
 p1 = Pear(space, W//2, 'боксёрская груша.jpg')
 items.add(p1)
+logos.append(p1.shape)
+
+
 
 
 mouse_joint = None
 mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
 while alive:
+
     for event in pygame.event.get():
         p1.check_event_pear(event)
         check_event_human(event)
@@ -53,6 +66,7 @@ while alive:
 
 
     screen.fill(WHITE)
+    work_with_items(items)
     items.draw(screen)
     space.step(1 / 50)  # Независимый цикл пересчитывающий физику
     space.debug_draw(draw_options)
