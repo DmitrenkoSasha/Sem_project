@@ -3,6 +3,7 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 from pymunk.vec2d import Vec2d
+from pygame.math import Vector2
 from typing import List
 
 
@@ -35,7 +36,6 @@ def add_ball(space, pos, box_offset):
 
 def add_lever(space, pos, box_offset):
     mass = 100
-    #vs = [(30, 240-170), (-30, 240-170), (-30, 0-170), (30, -170)]
     vs = [(-30, 270), (30, 270), (30, 0), (-30, 0)]
     moment = pymunk.moment_for_poly(mass, vs)
 
@@ -123,19 +123,24 @@ while True:
                 mouse_joint = None
 
     screen.fill(pygame.Color("white"))
+
+    '''# Rotate the image.
+    self.image = pg.transform.rotozoom(self.orig_image, -self.angle, 1)
+    # Rotate the offset vector.
+    offset_rotated = self.offset.rotate(self.angle)
+    # Create a new rect with the center of the sprite + the offset.
+    self.rect = self.image.get_rect(center=self.pos + offset_rotated)'''
+
     for logo_shape in logos:
-        # image draw
-        p = logo_shape.body.position
-        p = Vec2d(p.x, p.y+140)
+
+
+        p = logo_shape.body.position  # Остаётся постоянным 650,200
+        p = Vec2d(p.x, p.y)
+
 
         # we need to rotate 180 degrees because of the y coordinate flip
         angle_degrees = -math.degrees(logo_shape.body.angle)
         rotated_logo_img = pygame.transform.rotate(logo_img, angle_degrees)
-
-        offset = Vec2d(*rotated_logo_img.get_size()) / 2
-        p = p - offset
-
-        screen.blit(rotated_logo_img, (round(p.x), round(p.y)))
 
         # debug draw
         ps = [
@@ -145,7 +150,14 @@ while True:
         ps = [(round(p.x), round(p.y)) for p in ps]
         ps += [ps[0]]
         pygame.draw.lines(screen, pygame.Color("red"), False, ps, 1)
+        print(ps[1])
 
+        offset_x = rotated_logo_img.get_rect().size[0]/2
+        offset_y = rotated_logo_img.get_rect().size[1]/2
+        offset = Vec2d(offset_x, offset_y)
+        offset2 = (Vec2d(*ps[1] - logo_shape.body.position)+Vec2d(*ps[3] - logo_shape.body.position))/2
+        p = p - Vec2d(*offset) + offset2
+        screen.blit(rotated_logo_img, (round(p.x), round(p.y)))
 
 
     mouse_pos = pygame.mouse.get_pos()
