@@ -9,7 +9,7 @@ WHITE = (255, 255, 255)
 
 pygame.init()
 W = 1000
-H = 600
+H = 700
 screen = pygame.display.set_mode((W, H))
 space = pymunk.Space()
 space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
@@ -29,16 +29,16 @@ def work_with_items(items):
 
 
 def walls():
-    floor_shape = pymunk.Segment(space.static_body, (0, 600), (1000, 600), 50)
+    floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 50)
     space.add(floor_shape)
 
-    left_wall_shape = pymunk.Segment(space.static_body, (0, 0), (0, 600), 50)
+    left_wall_shape = pymunk.Segment(space.static_body, (0, 0), (0, H), 50)
     space.add(left_wall_shape)
 
-    right_wall_shape = pymunk.Segment(space.static_body, (1000, 0), (1000, 600), 50)
+    right_wall_shape = pymunk.Segment(space.static_body, (W, 0), (W, H), 50)
     space.add(right_wall_shape)
 
-    roof_shape = pymunk.Segment(space.static_body, (0, 0), (1000, 0), 50)
+    roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
     space.add(roof_shape)
 
 
@@ -58,7 +58,8 @@ mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 while alive:
 
     for event in pygame.event.get():
-        p1.check_event_pear(event, mouse_joint, mouse_body)
+
+        mouse_joint = p1.check_event_pear(event, mouse_joint, mouse_body)
         h1.check_event_human(event)
 
         if event.type == pygame.QUIT:
