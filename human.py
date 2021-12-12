@@ -3,10 +3,11 @@ import pymunk
 import pymunk.pygame_util
 from pymunk.vec2d import Vec2d
 
-class Human():
+
+class Human:
     def __init__(self, space):
         self.space = space
-
+        self.complect = []
 
     '''def draw_collision(arbiter, data):
         for c in arbiter.contact_point_set.points:
@@ -15,7 +16,6 @@ class Human():
 
             p = pymunk.pygame_util.to_pygame(c.point_a, data["surface"])
             pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)'''
-
 
     def create_ball(self):
         body = pymunk.Body(1, 10)
@@ -31,7 +31,7 @@ class Human():
         shape = pymunk.Circle(body, 15)
         shape.mass = 1
         shape.friction = 0.7
-        shape.filter = pymunk.ShapeFilter(categories = category, mask = mask)
+        shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
         shape.color = pygame.Color('red')
         self.space.add(body, shape)
         return body
@@ -59,9 +59,7 @@ class Human():
         self.space.add(body, shape)
         return body
 
-
     def create_Human(self):
-        global complect  # вынужденная приспособа
         telo = self.add_lever_2((200, 200), (0, 30), (0, -30), 2, 682)
         head = self.add_ball((200, 170), 1, 1021)
         c_head_body = pymunk.PivotJoint(head, telo, (200, 170))
@@ -99,27 +97,25 @@ class Human():
         self.space.add(c_body_right_arm)
         self.space.add(c_body_left_arm)
 
-        complect = [head, telo, right_arm_1, left_arm_1,
-                    right_leg_1, left_leg_1]
+        self.complect.append([head, telo, right_arm_1, left_arm_1,
+                             right_leg_1, left_leg_1])
 
     def check_event_human(self, event):
         """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
-                for part in complect:
+                for part in self.complect:
                     part.velocity += (400, 0)
             if event.key == pygame.K_LEFT:
-                for part in complect:
+                for part in self.complect:
                     part.velocity += (-400, 0)
             if event.key == pygame.K_UP:
-                for part in complect:
+                for part in self.complect:
                     part.velocity += (0, -400)
             if event.key == pygame.K_DOWN:
-                for part in complect:
+                for part in self.complect:
                     part.velocity += (0, 400)
             if event.key == pygame.K_r:
                 self.create_ball()
             if event.key == pygame.K_h:
                 self.create_Human()
-
-

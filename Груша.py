@@ -28,7 +28,7 @@ class Pear(pygame.sprite.Sprite):
 
     def add_lever(self, space, pos):
         mass = 100
-        vs = [(-30, 270), (30, 270), (30, 0), (-30, 0)]
+        vs = [(-30, 280), (30, 280), (30, 0), (-30, 0)]
 
         moment = pymunk.moment_for_poly(mass, vs)
         body = pymunk.Body(mass, moment)
@@ -73,10 +73,7 @@ class Pear(pygame.sprite.Sprite):
         pass
 
 
-    def check_event_pear(self, event):
-        mouse_joint = None
-        mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
-
+    def check_event_pear(self, event, mouse_joint, mouse_body):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mouse_joint is not None:
                 self.space.remove(mouse_joint)
@@ -103,26 +100,6 @@ class Pear(pygame.sprite.Sprite):
             if mouse_joint is not None:
                 self.space.remove(mouse_joint)
                 mouse_joint = None
-
-
-
-
-mouse_joint = None
-mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
-
-'''
-    mouse_pos = pygame.mouse.get_pos()
-
-
-    mouse_body.position = mouse_pos
-
-    space.step(1.0 / 60)
-
-    space.debug_draw(draw_options)
-    pygame.display.flip() # Обновляет весь экран
-
-    clock.tick(60)
-    pygame.display.set_caption(f"fps: {clock.get_fps()}")'''
 
 if __name__ == 'main':
     print("This module is not for direct call!")

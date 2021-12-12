@@ -3,7 +3,6 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 from pymunk.vec2d import Vec2d
-from pygame.math import Vector2
 from typing import List
 
 
@@ -25,14 +24,6 @@ pygame.display.update()
 logo_img = pygame.image.load("груша.png")
 logos: List[pymunk.Shape] = []
 
-def add_ball(space, pos, box_offset):
-    body = pymunk.Body()
-    body.position = Vec2d(*pos) + box_offset
-    shape = pymunk.Circle(body, 20)
-    shape.mass = 1
-    shape.friction = 0.7
-    space.add(body, shape)
-    return body
 
 def add_lever(space, pos, box_offset):
     mass = 100
@@ -55,23 +46,6 @@ def add_lever(space, pos, box_offset):
     logos.append(shape)
     return body
 
-'''def add_new(space):
-
-    x = random.randint(20, 400)
-    y = 500
-    angle = math.pi
-    # vs = [(-23, 26), (23, 26), (0, -26)]
-    vs = [(30, -120), (-30, -120), (-30, 100), (30, 100)]
-    mass = 10
-    moment = pymunk.moment_for_poly(mass, vs)
-    body = pymunk.Body(mass, moment)
-    shape = pymunk.Poly(body, vs)
-    shape.friction = 0.5
-    body.position = x, y
-    body.angle = angle
-
-    space.add(body, shape)
-    logos.append(shape)'''
 
 
 box_offset = 0, 0
@@ -150,7 +124,6 @@ while True:
         ps = [(round(p.x), round(p.y)) for p in ps]
         ps += [ps[0]]
         pygame.draw.lines(screen, pygame.Color("red"), False, ps, 1)
-        print(ps[1])
 
         offset_x = rotated_logo_img.get_rect().size[0]/2
         offset_y = rotated_logo_img.get_rect().size[1]/2
