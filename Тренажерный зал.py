@@ -1,9 +1,8 @@
+from human import *
 from pymunk.pygame_util import *
 
-
-from human import *
 from Груша import Pear
-from typing import List
+
 
 alive = True
 WHITE = (255, 255, 255)
@@ -18,13 +17,13 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 16)
 draw_options = pymunk.pygame_util.DrawOptions(screen)
 
-logos: List[pymunk.Shape] = []
 
-
-def work_with_items(items):
-    for item in items:
-        if type(item) is Pear:
-            rotated_logo_img, p, ps = item.rotate()
+def show_img_things(equipment):
+    """Рисует картинки элементов из списка снарядов в зале
+    equipment: список снарядов, которые будут видны в зале, и с которыми можно взаимодействовать"""
+    for one in equipment:
+        if type(one) is Pear:
+            rotated_logo_img, p, ps = one.rotate()
             screen.blit(rotated_logo_img, (round(p.x), round(p.y)))
             pygame.draw.lines(screen, pygame.Color("red"), False, ps, 1)
 
@@ -42,18 +41,21 @@ def walls():
     roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
     space.add(roof_shape)
 
-humans = []
-active_shape = None
 
-h1 = Human(space)
+humans = []
+things = []
+active_shape = None
+active_thing = None
+
+h1 = Human(space, screen)
 humans.append(h1)
 h1.create_Human()
 walls()
 
 items = pygame.sprite.Group()
-p1 = Pear(space, W//3, H//2, 'боксёрская груша.jpg')
+p1 = Pear(space, W//3, H//4, 'груша.png')
+things.append(p1)
 items.add(p1)
-logos.append(p1.shape)
 
 
 mouse_joint = None
@@ -66,35 +68,37 @@ while alive:
         mouse_joint = p1.check_event_pear(event, mouse_joint, mouse_body)
         h1.check_event_human(event)
 
-
         if event.type == pygame.QUIT:
             alive = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            p = from_pygame(event.pos, screen)
+            p = from_pygame(event.pos, screen)  # Встроенная ф-ция, чтобы переводить коорд. из формата pygame в pymunk
             active_shape = None
-            for s in space.shapes:
-                if type(s) is pymunk.shapes.Poly:
-                    dist = s.point_query(p)[2]
+            active_thing = None
+            for thing in things:
+                if type(thing.shape) is pymunk.shapes.Poly:
+                    dist = thing.shape.point_query(p)[2]  # Встроенная функция
                     if dist < 0:
-                        active_shape = s
+                        active_thing = thing
 
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             alive = False
         elif event.type == pygame.MOUSEMOTION:
             mouse_pos = pymunk.pygame_util.get_mouse_pos(screen)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
-            s = active_shape
-            if s != None:
-                space.remove(s, s.body)
-                active_shape = None
+            t = active_thing  # Находим тело, на которое нажали мышкой
+            if t is not None:
+                space.remove(t.shape, t.body)
+                things.remove(t)
 
     screen.fill(WHITE)
-    work_with_items(items)
-    # items.draw(screen)
-    space.step(1 / 50)  # Независимый цикл пересчитывающий физику
+
+    #items.draw(screen)
     space.debug_draw(draw_options)
+    show_img_things(things)
+
     pygame.display.update()  # Обновляет весь экран, если не передать аргумент
 
+    space.step(1 / 50)  # Независимый цикл пересчитывающий физику
     clock.tick(30)
 
 pygame.quit()
