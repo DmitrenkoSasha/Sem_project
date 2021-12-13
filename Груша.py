@@ -14,26 +14,18 @@ class Pear(pygame.sprite.Sprite):
         self.image = pygame.image.load(filename).convert_alpha()  # Графическое представление спрайта
         #self.rect = self.image.get_rect(center=(x, 200))  # Положение и размер спрайта
         self.space = space
+        #self.vs = [(-30, 275), (30, 275), (30, 105), (-30, 105)]
         self.body = self.add_lever(space, (x, y))
-        self.logo_img = pygame.image.load("груша.png")
-
-    def add_ball(self, space, pos):
-        body = pymunk.Body()
-        body.position = Vec2d(*pos)
-        shape = pymunk.Circle(body, 20)
-        shape.mass = 1
-        shape.friction = 0.7
-        space.add(body, shape)
-        return body
+        #self.shape = pymunk.Poly(self.body, self.vs)
 
     def add_lever(self, space, pos):
         mass = 100
-        vs = [(-30, 280), (30, 280), (30, 0), (-30, 0)]
-
+        vs = [(-28, 265), (28, 265), (28, 63), (-28, 64), (0, 55), (0, 270)]
         moment = pymunk.moment_for_poly(mass, vs)
         body = pymunk.Body(mass, moment)
-        body.position = pos
         self.shape = pymunk.Poly(body, vs)
+        body.position = pos
+
         self.shape.friction = 1
         rotation_center_body = pymunk.Body(body_type=pymunk.Body.STATIC)
         rotation_center_body.position = body.position
@@ -45,28 +37,42 @@ class Pear(pygame.sprite.Sprite):
         return body
 
     def rotate(self):
-        p = self.shape.body.position  # Остаётся постоянным 650,200
-        p = Vec2d(p.x, p.y)
+        """Вращение картинки и красной рамки так, чтобы они всегда накладывалась на тело
+        :return: rotated_img - картинка, повёрнутая вокруг своего геом.центра
+                           p - вектор к геом.центру рисунка
+                          ps - координаты вершин красной рамки вокруг картинки"""
+        # Вектор к точке поворота; Остаётся постоянным 650,200
+        vec_rot = self.shape.body.position
+        vec_rot = Vec2d(vec_rot.x, vec_rot.y)
 
-        # we need to rotate 180 degrees because of the y coordinate flip
+        # Нужно повернуть на 180 градусов
         angle_degrees = -math.degrees(self.shape.body.angle)
-        rotated_logo_img = pygame.transform.rotate(self.image, angle_degrees)
+        rotated_img = pygame.transform.rotate(self.image, angle_degrees)
 
-        # debug draw
+        # Координаты красной рамки вокруг картинки
         ps = [
-            p.rotated(self.shape.body.angle) + self.shape.body.position
-            for p in self.shape.get_vertices()]
+            vrtcs.rotated(self.shape.body.angle) + self.shape.body.position
+            for vrtcs in self.shape.get_vertices()]
 
         ps = [(round(p.x), round(p.y)) for p in ps]
         ps += [ps[0]]
 
-        offset_x = rotated_logo_img.get_rect().size[0] / 2
-        offset_y = rotated_logo_img.get_rect().size[1] / 2
-        offset = Vec2d(offset_x, offset_y)
-        offset2 = (Vec2d(*ps[1] - self.shape.body.position) + Vec2d(*ps[3] - self.shape.body.position)) / 2
-        p = p - Vec2d(*offset) + offset2
 
-        return rotated_logo_img, p, ps
+        #  Для смещения лев.верх. угла пов-ти рисунка
+        offset_x = rotated_img.get_rect().size[0] / 2
+        offset_y = rotated_img.get_rect().size[1] / 2
+        offset = Vec2d(offset_x, offset_y)
+
+        #  Ищу полусумму двух векторов vec0, vec2 к диагонально противоположным точкам
+        vec0 = Vec2d(-30, 0).rotated(self.shape.body.angle) + self.shape.body.position
+        vec2 = Vec2d(30, 300).rotated(self.shape.body.angle) + self.shape.body.position
+        #  Расположение центра рисунка
+        offset2 = (Vec2d(*vec0 - self.shape.body.position) + Vec2d(*vec2 - self.shape.body.position)) / 2
+
+        #  Вектор к центру картинки
+        p = vec_rot - Vec2d(*offset) + offset2
+
+        return rotated_img, p, ps
 
 
     def update(self, *args):
@@ -100,6 +106,19 @@ class Pear(pygame.sprite.Sprite):
             if mouse_joint is not None:
                 self.space.remove(mouse_joint)
                 mouse_joint = None
+
+        return mouse_joint
+
+class Ball(pygame.sprite.Sprite):
+
+    def add_ball(self, space, pos):
+        body = pymunk.Body()
+        body.position = Vec2d(*pos)
+        shape = pymunk.Circle(body, 20)
+        shape.mass = 1
+        shape.friction = 0.7
+        space.add(body, shape)
+        return
 
 if __name__ == 'main':
     print("This module is not for direct call!")
