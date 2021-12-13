@@ -13,7 +13,7 @@ W = 1000
 H = 700
 screen = pygame.display.set_mode((W, H))
 space = pymunk.Space()
-space.gravity = (0, 900)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
+space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 16)
 draw_options = pymunk.pygame_util.DrawOptions(screen)
@@ -47,7 +47,7 @@ active_shape = None
 
 h1 = Human(space)
 humans.append(h1)
-h1.create_Human()
+h1.create_Human(700, 200)
 walls()
 
 items = pygame.sprite.Group()
@@ -61,12 +61,8 @@ mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
 while alive:
 
+    h1.check_event_human_1()
     for event in pygame.event.get():
-
-        mouse_joint = p1.check_event_pear(event, mouse_joint, mouse_body)
-        h1.check_event_human(event)
-
-
         if event.type == pygame.QUIT:
             alive = False
         elif event.type == pygame.MOUSEBUTTONDOWN:

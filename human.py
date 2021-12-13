@@ -2,34 +2,34 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 from pymunk.vec2d import Vec2d
+from pygame.locals import *
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
 space = pymunk.Space()
 space.gravity = (0, 50)
 clock = pygame.time.Clock()
-scale = 5
+scale = 2
 font = pygame.font.SysFont("Arial", 16)
 options = pymunk.pygame_util.DrawOptions(screen)
 options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
+collision_types = {
+    "head": 1,
+    "body": 2,
+    "arm": 3,
+    "leg": 4,
+    "wall": 5
+}
 
 class Human:
     def __init__(self, space):
         self.space = space
         self.complect = []
+        self.points = 0
 
-    '''def draw_collision(arbiter, data):
-        for c in arbiter.contact_point_set.points:
-            r = max(3, abs(c.distance * 5))
-            r = int(r)
-
-            p = pymunk.pygame_util.to_pygame(c.point_a, data["surface"])
-            pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)'''
-
-    def create_ball(self):
+    def create_ball(self, x, y, radius):
         body = pymunk.Body(1, 10)
-        body.position = (500, 300)
-        radius = 25
+        body.position = (x, y)
         shape = pymunk.Circle(body, radius)
         self.space.add(body, shape)  # Объединили душу и тело
         return shape
@@ -42,6 +42,7 @@ class Human:
         shape.friction = 0.7
         shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
         shape.color = pygame.Color('red')
+        shape.collision_type = collision_types["head"]
         self.space.add(body, shape)
         return body
 
@@ -53,6 +54,7 @@ class Human:
         shape.friction = 50
         shape.color = pygame.Color('blue')
         shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
+        shape.collision_type = collision_types["leg"]
         self.space.add(body, shape)
         return body
 
@@ -65,12 +67,11 @@ class Human:
         shape.color = (142, 68, 173, 255)
         shape.color = pygame.Color('blue')
         shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
+        shape.collision_type = collision_types["body"]
         self.space.add(body, shape)
         return body
 
-    def create_Human(self):
-        x = 700
-        y = 200
+    def create_Human(self, x, y):
         telo = self.add_lever_2((x, y), (0, 30 * scale), (0, -30 * scale), 2, 682)
         head = self.add_ball((x, y - 30 * scale), 1, 1021)
         c_head_body = pymunk.PivotJoint(head, telo, (x, y - 30 * scale))
@@ -129,22 +130,33 @@ class Human:
         self.complect = ([head, telo, right_arm_1, left_arm_1,
                              right_leg_1, left_leg_1])
 
-    def check_event_human(self, event):
+    def check_event_human_1(self):
         """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
-                for part in self.complect:
-                    part.velocity += (40, 0)
-            if event.key == pygame.K_LEFT:
-                for part in self.complect:
-                    part.velocity += (-40, 0)
-            if event.key == pygame.K_UP:
-                for part in self.complect:
-                    part.velocity += (0, -40)
-            if event.key == pygame.K_DOWN:
-                for part in self.complect:
-                    part.velocity += (0, 40)
-            if event.key == pygame.K_r:
-                self.create_ball()
-            if event.key == pygame.K_h:
-                self.create_Human()
+        if pygame.key.get_pressed()[K_RIGHT]:
+            for part in self.complect:
+                part.velocity += (30, 0)
+        if pygame.key.get_pressed()[K_LEFT]:
+            for part in self.complect:
+                part.velocity += (-30, 0)
+        if pygame.key.get_pressed()[K_UP]:
+            for part in self.complect:
+                part.velocity += (0, -30)
+        if pygame.key.get_pressed()[K_DOWN]:
+            for part in self.complect:
+                part.velocity += (0, 30)
+
+
+    def check_event_human_2(self):
+        """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
+        if pygame.key.get_pressed()[K_d]:
+            for part in self.complect:
+                part.velocity += (30, 0)
+        if pygame.key.get_pressed()[K_a]:
+            for part in self.complect:
+                part.velocity += (-30, 0)
+        if pygame.key.get_pressed()[K_w]:
+            for part in self.complect:
+                part.velocity += (0, -30)
+        if pygame.key.get_pressed()[K_s]:
+            for part in self.complect:
+                part.velocity += (0, 30)
