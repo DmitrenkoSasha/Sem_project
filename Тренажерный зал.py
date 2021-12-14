@@ -1,5 +1,8 @@
 from human import *
+import pymunk.autogeometry
+
 from pymunk.pygame_util import *
+
 
 from Груша import Pear
 
@@ -15,7 +18,8 @@ space = pymunk.Space()
 space.gravity = (0, 900)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 16)
-draw_options = pymunk.pygame_util.DrawOptions(screen)
+options = pymunk.pygame_util.DrawOptions(screen)
+options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
 
 
 def show_img_things(equipment):
@@ -25,7 +29,8 @@ def show_img_things(equipment):
         if type(one) is Pear:
             rotated_logo_img, p, ps = one.rotate()
             screen.blit(rotated_logo_img, (round(p.x), round(p.y)))
-            pygame.draw.lines(screen, pygame.Color("red"), False, ps, 1)
+            #pygame.draw.lines(screen, pygame.Color("red"), False, ps, 1)
+
 
 
 def walls():
@@ -47,26 +52,23 @@ things = []
 active_shape = None
 active_thing = None
 
-h1 = Human(space, screen)
+h1 = Human(space)
 humans.append(h1)
-h1.create_Human()
+h1.create_Human(100, 100)
 walls()
 
 items = pygame.sprite.Group()
-p1 = Pear(space, W//3, H//4, 'груша.png')
+p1 = Pear(space, W//3, H//2, 'груша.png')
 things.append(p1)
-items.add(p1)
+# items.add(p1)
 
 
 mouse_joint = None
 mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
 while alive:
-
+    screen.fill(WHITE)
     for event in pygame.event.get():
-
-        mouse_joint = p1.check_event_pear(event, mouse_joint, mouse_body)
-        h1.check_event_human(event)
 
         if event.type == pygame.QUIT:
             alive = False
@@ -80,8 +82,33 @@ while alive:
                     if dist < 0:
                         active_thing = thing
 
+            if mouse_joint is not None:
+                space.remove(mouse_joint)
+                mouse_joint = None
+
+            p = Vec2d(*event.pos)
+
+            hit = space.point_query_nearest(p, 5, pymunk.ShapeFilter())
+            if hit is not None and hit.shape.body.body_type == pymunk.Body.DYNAMIC:
+                # Используем ближайшую точку на поверхности в заданном радиусе
+                # если точка нажатия мышки за формой тела
+                if hit.distance > 0:
+                    nearest = hit.point
+                else:
+                    nearest = p
+                mouse_joint = pymunk.PivotJoint(
+                    mouse_body, hit.shape.body, (0, 0), hit.shape.body.world_to_local(nearest)
+                )
+                mouse_joint.max_force = 50000
+                mouse_joint.error_bias = (1 - 0.15) ** 60
+                space.add(mouse_joint)
+
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             alive = False
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if mouse_joint is not None:
+                space.remove(mouse_joint)
+                mouse_joint = None
         elif event.type == pygame.MOUSEMOTION:
             mouse_pos = pymunk.pygame_util.get_mouse_pos(screen)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
@@ -90,10 +117,11 @@ while alive:
                 space.remove(t.shape, t.body)
                 things.remove(t)
 
-    screen.fill(WHITE)
 
+    mouse_pos = pygame.mouse.get_pos()
+    mouse_body.position = mouse_pos
     #items.draw(screen)
-    space.debug_draw(draw_options)
+    space.debug_draw(options)
     show_img_things(things)
 
     pygame.display.update()  # Обновляет весь экран, если не передать аргумент

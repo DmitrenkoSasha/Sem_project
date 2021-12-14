@@ -4,6 +4,7 @@ import math
 from pymunk.vec2d import Vec2d
 
 
+
 class Pear(pygame.sprite.Sprite):
     def __init__(self, space, x, y, filename):
         """Боксёрская груша, пользователь будет ставить её представителей, куда ему захочется,
@@ -14,7 +15,6 @@ class Pear(pygame.sprite.Sprite):
         self.image = pygame.image.load(filename).convert_alpha()  # Графическое представление спрайта
         #self.rect = self.image.get_rect(center=(x, 200))  # Положение и размер спрайта
         self.space = space
-        #self.vs = [(-28, 265), (28, 265), (28, 63), (-28, 63), (0, 50), (0, 270)]
         self.vs = [(-28, 120), (28, 120), (28, -90), (-28, -90), (0, -100)]
         self.x, self.y = x, y
         self.mass = 100
@@ -31,10 +31,11 @@ class Pear(pygame.sprite.Sprite):
         moment = pymunk.moment_for_poly(self.mass, self.vs)
         body = pymunk.Body(self.mass, moment)
         body.position = (self.x, self.y)
+
         rotation_center_body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        #rotation_center_body.position = body.position
-        rotation_center_body.position = body.position + (0, -130)
-        rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0, -130), (0, 0))
+        # Располагается на 130 выше центра масс груши - чуть больше половины картинки
+        rotation_center_body.position = body.position + (0, -140)
+        rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0, -140), (0, 0))
         self.space.add(rotation_center_joint)
         self.space.add(body)
 
@@ -76,14 +77,8 @@ class Pear(pygame.sprite.Sprite):
         offset_y = rotated_img.get_rect().size[1] / 2
         offset = Vec2d(offset_x, offset_y)
 
-        #  Ищу полусумму двух векторов vec0, vec2 к диагонально противоположным точкам
-        vec0 = Vec2d(-30, 0).rotated(self.shape.body.angle) + self.shape.body.position
-        vec2 = Vec2d(30, 300).rotated(self.shape.body.angle) + self.shape.body.position
-        #  Расположение центра рисунка
-        #offset2 = (Vec2d(*vec0 - self.shape.body.position) + Vec2d(*vec2 - self.shape.body.position)) / 2
-
         #  Вектор к центру картинки
-        p = vec_rot - Vec2d(*offset) #+ offset2
+        p = vec_rot - Vec2d(*offset)
 
         return rotated_img, p, ps
 
@@ -92,42 +87,8 @@ class Pear(pygame.sprite.Sprite):
         pass
 
 
-    def check_event_pear(self, event, mouse_joint, mouse_body):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if mouse_joint is not None:
-                self.space.remove(mouse_joint)
-                mouse_joint = None
-
-            p = Vec2d(*event.pos)
-            print(p)
-            hit = self.space.point_query_nearest(p, 5, self.filter)
-            print(hit)
-            if hit is not None and hit.shape.body.body_type == pymunk.Body.DYNAMIC:
-                # Use the closest point on the surface if the click is outside
-                # of the shape.
-                if hit.distance > 0:
-                    nearest = hit.point
-                else:
-                    nearest = p
-                print(mouse_body)
-                # (0, 0) отвечает за положение фиолетовой точки mouse_joint относит. положения курсора
-                mouse_joint = pymunk.PivotJoint(mouse_body, hit.shape.body, (0, 0),
-                                                hit.shape.body.world_to_local(nearest))
-                mouse_joint.max_force = 50000
-                mouse_joint.error_bias = (1 - 0.15) ** 60  # Определяет максимальное кол-во ошибок за один шаг
-                self.space.add(mouse_joint)
-                print(mouse_joint)
-
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if mouse_joint is not None:
-                self.space.remove(mouse_joint)
-                mouse_joint = None
-
-        return mouse_joint
-
-
-class Ball(pygame.sprite.Sprite):
-
+class Ball(pygame.sprite.Sprite):# (0, 0) отвечает за положение фиолетовой точки mouse_joint относительно положения курсора
+    # Определяет максимальное кол-во ошибок за один шаг
     def add_ball(self, space, pos):
         body = pymunk.Body()
         body.position = Vec2d(*pos)
