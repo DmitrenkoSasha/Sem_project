@@ -18,10 +18,15 @@ space = pymunk.Space()
 scale = 2
 space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
 clock = pygame.time.Clock()
-font = pygame.font.SysFont("Arial", 16)
+font = pygame.font.SysFont("Arial", 30)
 draw_options = pymunk.pygame_util.DrawOptions(screen)
+draw_options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
 balls = []
+handlers = []
 balls_to_remove = []
+head_list = []
+human_1_shapes = []
+human_2_shapes = []
 
 collision_types = {
     "head_1": 1,
@@ -57,6 +62,7 @@ def add_ball(pos, category, mask, collision_type):
     shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
     shape.color = pygame.Color('red')
     shape.collision_type = collision_types[collision_type]
+    head_list.append(shape)
     space.add(body, shape)
     return body
 
@@ -71,8 +77,8 @@ def add_lever(pos, x1, x2, category, mask, collision_type):
     shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
     shape.collision_type = collision_types[collision_type]
     space.add(body, shape)
+    human_1_shapes.append(shape)
     return body
-
 
 def add_lever_2(pos, x1, x2, category, mask, collision_type):
     body = pymunk.Body()
@@ -84,20 +90,20 @@ def add_lever_2(pos, x1, x2, category, mask, collision_type):
     shape.color = pygame.Color('blue')
     shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
     shape.collision_type = collision_types[collision_type]
-    print(collision_type)
+    human_2_shapes.append(shape)
     space.add(body, shape)
     return body
 
 def create_Human_1(x, y):
-    global complect_1
-    telo_1 = add_lever_2((x, y), (0, 30 * scale), (0, -30 * scale), 2, 682, 'body_1')
+    global complect_1, points_1
+    telo_1 = add_lever((x, y), (0, 30 * scale), (0, -30 * scale), 2, 682, 'body_1')
     head_1 = add_ball((x, y - 30 * scale), 1, 1021, 'head_1')
     c_head_body = pymunk.PivotJoint(head_1, telo_1, (x, y - 30 * scale))
     c_head_body.color = pygame.Color('white')
     space.add(c_head_body)
 
     right_leg_1 = add_lever((x, y), (0, 30 * scale), (20 * scale, 50 * scale), 256, 477, 'right_leg_1')
-    right_feet_1 = add_lever((x, y), (20 * scale, 50 * scale), (20 * scale, 80 * scale), 512, 767, 'left_leg_1')
+    right_feet_1 = add_lever((x, y), (20 * scale, 50 * scale), (20 * scale, 80 * scale), 512, 767, 'right_feet_1')
     c_right_leg = pymunk.PivotJoint(right_leg_1, right_feet_1, (x + 20 * scale, y + 50 * scale))
     c_right_leg.color = pygame.Color('red')
     space.add(c_right_leg)
@@ -147,23 +153,24 @@ def create_Human_1(x, y):
 
     complect_1 = ([head_1, telo_1, right_arm_1, left_arm_1,
                       right_leg_1, left_leg_1])
+    points_1 = 0
 
 def create_Human_2(x, y):
-    global complect_2
+    global complect_2, points_2
     telo_2 = add_lever_2((x, y), (0, 30 * scale), (0, -30 * scale), 2, 682, 'body_2')
     head_2 = add_ball((x, y - 30 * scale), 1, 1021, 'head_2')
     c_head_body = pymunk.PivotJoint(head_2, telo_2, (x, y - 30 * scale))
     c_head_body.color = pygame.Color('white')
     space.add(c_head_body)
 
-    right_leg_2 = add_lever((x, y), (0, 30 * scale), (20 * scale, 50 * scale), 256, 477, 'right_leg_2')
-    right_feet_2 = add_lever((x, y), (20 * scale, 50 * scale), (20 * scale, 80 * scale), 512, 767, 'left_leg_2')
+    right_leg_2 = add_lever_2((x, y), (0, 30 * scale), (20 * scale, 50 * scale), 256, 477, 'right_leg_2')
+    right_feet_2 = add_lever_2((x, y), (20 * scale, 50 * scale), (20 * scale, 80 * scale), 512, 767, 'right_feet_2')
     c_right_leg = pymunk.PivotJoint(right_leg_2, right_feet_2, (x + 20 * scale, y + 50 * scale))
     c_right_leg.color = pygame.Color('red')
     space.add(c_right_leg)
 
-    left_leg_2 = add_lever((x, y), (0, 30 * scale), (-20 * scale, 50 * scale), 64, 637, 'left_leg_2')
-    left_feet_2 = add_lever((x, y), (-20 * scale, 50 * scale), (-20 * scale, 80 * scale), 128, 959, 'left_feet_2')
+    left_leg_2 = add_lever_2((x, y), (0, 30 * scale), (-20 * scale, 50 * scale), 64, 637, 'left_leg_2')
+    left_feet_2 = add_lever_2((x, y), (-20 * scale, 50 * scale), (-20 * scale, 80 * scale), 128, 959, 'left_feet_2')
     c_left_leg = pymunk.PivotJoint(left_leg_2, left_feet_2, (x - 20 * scale, y + 50 * scale))
     space.add(c_left_leg)
 
@@ -184,13 +191,13 @@ def create_Human_2(x, y):
     space.add(spring_body_right_leg)
     space.add(spring_body_left_leg)
 
-    right_arm_2 = add_lever((x, y), (0, -5 * scale), (15 * scale, -20 * scale), 16, 985, 'right_arm_2')
-    right_hand_2 = add_lever((x, y), (15 * scale, -20 * scale), (40 * scale, -45 * scale), 32, 991, 'right_hand_2')
+    right_arm_2 = add_lever_2((x, y), (0, -5 * scale), (15 * scale, -20 * scale), 16, 985, 'right_arm_2')
+    right_hand_2 = add_lever_2((x, y), (15 * scale, -20 * scale), (40 * scale, -45 * scale), 32, 991, 'right_hand_2')
     c_right_arm = pymunk.PivotJoint(right_arm_2, right_hand_2, (x + 15 * scale, y - 20 * scale))
     space.add(c_right_arm)
 
-    left_arm_2 = add_lever((x, y), (0, -5 * scale), (-15 * scale, -20 * scale), 4, 997, 'left_arm_2')
-    left_hand_2 = add_lever((x, y), (-15 * scale, -20 * scale), (-40 * scale, -45 * scale), 8, 1019, 'left_hand_2')
+    left_arm_2 = add_lever_2((x, y), (0, -5 * scale), (-15 * scale, -20 * scale), 4, 997, 'left_arm_2')
+    left_hand_2 = add_lever_2((x, y), (-15 * scale, -20 * scale), (-40 * scale, -45 * scale), 8, 1019, 'left_hand_2')
     c_left_arm = pymunk.PivotJoint(left_arm_2, left_hand_2, (x - 15 * scale, y - 20 * scale))
     space.add(c_left_arm)
 
@@ -207,6 +214,20 @@ def create_Human_2(x, y):
 
     complect_2 = ([head_2, telo_2, right_arm_2, left_arm_2,
                       right_leg_2, left_leg_2])
+    points_2 = 0
+
+def walls():
+    floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 50)
+    space.add(floor_shape)
+
+    left_wall_shape = pymunk.Segment(space.static_body, (0, 0), (0, H), 50)
+    space.add(left_wall_shape)
+
+    right_wall_shape = pymunk.Segment(space.static_body, (W, 0), (W, H), 50)
+    space.add(right_wall_shape)
+
+    roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
+    space.add(roof_shape)
 
 def create_blood(space, center, radius):
     body = pymunk.Body(1000, 1000)
@@ -222,13 +243,14 @@ def create_blood(space, center, radius):
     return shape
 
 def draw_blood(arbiter, space, data):
+    global complect_1, complect_2
     for c in arbiter.contact_point_set.points:
         r = max(3, abs(c.distance * 5))
         r = int(r)
 
         p = pymunk.pygame_util.to_pygame(c.point_a, data["surface"])
         pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)
-        for i in range(20):
+        for i in range(100):
             create_blood(space, p, 2)
         ### Draw stuff
         balls_to_remove = []
@@ -241,35 +263,92 @@ def draw_blood(arbiter, space, data):
         for ball in balls_to_remove:
             space.remove(ball, ball.body)
             balls.remove(ball)
+    return True
+
+def count_points(arbiter, space, data):
+    global points_1, points_2
+    part_1 = arbiter.shapes[0]
+    part_2 = arbiter.shapes[1]
+    print(part_1)
+    print(part_2)
+    if part_1 == head_list[0]:
+        if part_2 == head_list[1]:
+            points_1 -= 2
+            points_2 -= 2
+        if part_2 == human_2_shapes[0]:
+            points_2 += 1
+        for i in range (1,5,1):
+            if part_2 == human_2_shapes[i]:
+                points_2 += 3
+        for i in range(5, 9, 1):
+            if part_2 == human_2_shapes[i]:
+                points_2 += 2
+
+    elif part_1 == head_list[1]:
+        if part_2 == human_1_shapes[0]:
+            points_1 += 1
+        for i in range (1,5,1):
+            if part_2 == human_1_shapes[i]:
+                points_1 += 3
+        for i in range(5, 9, 1):
+            if part_2 == human_1_shapes[i]:
+                points_1 += 2
+
+    elif part_1 == human_1_shapes[0]:
+        for i in range(1, 5, 1):
+            if part_2 == human_2_shapes[i]:
+                points_2 += 2
+        for i in range(5, 9, 1):
+            if part_2 == human_2_shapes[i]:
+                points_2 += 1
+
+    elif part_1 == human_2_shapes[0]:
+        for i in range(1, 5, 1):
+            if part_2 == human_1_shapes[i]:
+                points_1 += 2
+        for i in range(5, 9, 1):
+            if part_2 == human_1_shapes[i]:
+                points_1 += 1
+
 
 def add_blood_handler(object_1, object_2):
     handler = space.add_collision_handler(collision_types[object_1], collision_types[object_2])
     handler.data["surface"] = screen
-    handler.post_solve = draw_blood
+    handler.begin = draw_blood
+    handler.separate = count_points
+    handlers.append(handler)
+
+create_Human_1(300, 500)
+create_Human_2(700, 500)
+walls()
+head_list[1].color = pygame.Color('green')
+
 add_blood_handler('head_1',"head_2")
 add_blood_handler('head_1',"right_hand_2")
-add_blood_handler('head_1',"right_leg_2")
+add_blood_handler('head_1',"right_feet_2")
 add_blood_handler('head_1',"left_hand_2")
-add_blood_handler('head_1',"left_leg_2")
+add_blood_handler('head_1',"left_feet_2")
+add_blood_handler('body_1',"right_hand_2")
+add_blood_handler('body_1',"left_hand_2")
+add_blood_handler('body_1',"right_feet_2")
+add_blood_handler('body_1',"left_feet_2")
 
-add_blood_handler('head_2',"head_1")
 add_blood_handler('head_2',"right_hand_1")
-add_blood_handler('head_2',"right_leg_1")
+add_blood_handler('head_2',"right_feet_1")
 add_blood_handler('head_2',"left_hand_1")
-add_blood_handler('head_2',"left_leg_1")
+add_blood_handler('head_2',"left_feet_1")
+add_blood_handler('body_2',"right_hand_1")
+add_blood_handler('body_2',"left_hand_1")
+add_blood_handler('body_2',"right_feet_1")
+add_blood_handler('body_2',"left_feet_1")
 
-def walls():
-    floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 50)
-    space.add(floor_shape)
 
-    left_wall_shape = pymunk.Segment(space.static_body, (0, 0), (0, H), 50)
-    space.add(left_wall_shape)
+def make_text(points_1, points_2):
+    text_1 = font.render('Очки: '+str(points_1), True, 'red')
+    text_2 = font.render('Очки: '+str(points_2), True, 'green2')
+    screen.blit(text_1, (20, 20))
+    screen.blit(text_2, (800, 20))
 
-    right_wall_shape = pymunk.Segment(space.static_body, (W, 0), (W, H), 50)
-    space.add(right_wall_shape)
-
-    roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
-    space.add(roof_shape)
 
 def check_event_human_1():
     """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
@@ -302,13 +381,6 @@ def check_event_human_2():
         for part in complect_2:
             part.velocity += (0, 30)
 
-def points():
-    pass
-
-create_Human_1(700, 500)
-create_Human_2(300, 500)
-walls()
-
 while alive:
     check_event_human_1()
     check_event_human_2()
@@ -320,6 +392,7 @@ while alive:
     screen.fill(WHITE)
     space.step(1 / 40)  # Независимый цикл пересчитывающий физику
     space.debug_draw(draw_options)
+    make_text(points_1, points_2)
     pygame.display.update()  # Обновляет весь экран, если не передать аргумент
 
     clock.tick(30)
