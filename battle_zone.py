@@ -6,6 +6,7 @@ import pymunk
 import pymunk.pygame_util
 from pymunk.vec2d import Vec2d
 from pygame.locals import *
+from textures import *
 
 alive = True
 WHITE = (255, 255, 255)
@@ -15,7 +16,7 @@ W = 1000
 H = 700
 screen = pygame.display.set_mode((W, H))
 space = pymunk.Space()
-scale = 2
+scale = 1.2
 space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 30)
@@ -116,9 +117,9 @@ def create_Human_1(x, y):
     c_body_right_leg = pymunk.PivotJoint(right_leg_1, telo_1, (x, y + 30 * scale))
     c_body_left_leg = pymunk.PivotJoint(left_leg_1, telo_1, (x, y + 30 * scale))
     spring_legs = pymunk.DampedSpring(left_feet_1, right_feet_1, (-20 * scale, 70 * scale), (20 * scale, 70 * scale),
-                                      40 * scale, 2000, 50)
+                                      40 * scale, 500, 50)
     spring_legs_2 = pymunk.DampedSpring(left_leg_1, right_leg_1, (-20 * scale, 50 * scale),
-                                        (20 * scale, 50 * scale), 50 * scale, 2000, 50)
+                                        (20 * scale, 50 * scale), 50 * scale, 500, 50)
     spring_body_right_leg = pymunk.DampedSpring(telo_1, right_feet_1, (0, 20 * scale), (20 * scale, 70 * scale),
                                                 70 * scale, 500, 0.3)
     spring_body_left_leg = pymunk.DampedSpring(telo_1, left_feet_1, (0, 20 * scale), (-20 * scale, 70 * scale),
@@ -153,7 +154,7 @@ def create_Human_1(x, y):
 
     complect_1 = ([head_1, telo_1, right_arm_1, left_arm_1,
                       right_leg_1, left_leg_1])
-    points_1 = 0
+    points_1 = 100
 
 def create_Human_2(x, y):
     global complect_2, points_2
@@ -177,9 +178,9 @@ def create_Human_2(x, y):
     c_body_right_leg = pymunk.PivotJoint(right_leg_2, telo_2, (x, y + 30 * scale))
     c_body_left_leg = pymunk.PivotJoint(left_leg_2, telo_2, (x, y + 30 * scale))
     spring_legs = pymunk.DampedSpring(left_feet_2, right_feet_2, (-20 * scale, 70 * scale), (20 * scale, 70 * scale),
-                                      40 * scale, 2000, 50)
+                                      40 * scale, 500, 50)
     spring_legs_2 = pymunk.DampedSpring(left_leg_2, right_leg_2, (-20 * scale, 50 * scale),
-                                        (20 * scale, 50 * scale), 50 * scale, 2000, 50)
+                                        (20 * scale, 50 * scale), 50 * scale, 500, 50)
     spring_body_right_leg = pymunk.DampedSpring(telo_2, right_feet_2, (0, 20 * scale), (20 * scale, 70 * scale),
                                                 70 * scale, 500, 0.3)
     spring_body_left_leg = pymunk.DampedSpring(telo_2, left_feet_2, (0, 20 * scale), (-20 * scale, 70 * scale),
@@ -214,7 +215,7 @@ def create_Human_2(x, y):
 
     complect_2 = ([head_2, telo_2, right_arm_2, left_arm_2,
                       right_leg_2, left_leg_2])
-    points_2 = 0
+    points_2 = 100
 
 def walls():
     floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 50)
@@ -276,40 +277,39 @@ def count_points(arbiter, space, data):
             points_1 -= 2
             points_2 -= 2
         if part_2 == human_2_shapes[0]:
-            points_2 += 1
-        for i in range (1,5,1):
+            points_2 -= 1
+        for i in range(1, 5, 1):
             if part_2 == human_2_shapes[i]:
-                points_2 += 3
+                points_2 -= 3
         for i in range(5, 9, 1):
             if part_2 == human_2_shapes[i]:
-                points_2 += 2
+                points_2 -= 2
 
     elif part_1 == head_list[1]:
         if part_2 == human_1_shapes[0]:
-            points_1 += 1
-        for i in range (1,5,1):
+            points_1 -= 1
+        for i in range(1, 5, 1):
             if part_2 == human_1_shapes[i]:
-                points_1 += 3
+                points_1 -= 3
         for i in range(5, 9, 1):
             if part_2 == human_1_shapes[i]:
-                points_1 += 2
+                points_1 -= 2
 
     elif part_1 == human_1_shapes[0]:
         for i in range(1, 5, 1):
             if part_2 == human_2_shapes[i]:
-                points_2 += 2
+                points_2 -= 2
         for i in range(5, 9, 1):
             if part_2 == human_2_shapes[i]:
-                points_2 += 1
+                points_2 -= 1
 
     elif part_1 == human_2_shapes[0]:
         for i in range(1, 5, 1):
             if part_2 == human_1_shapes[i]:
-                points_1 += 2
+                points_1 -= 2
         for i in range(5, 9, 1):
             if part_2 == human_1_shapes[i]:
-                points_1 += 1
-
+                points_1 -= 1
 
 def add_blood_handler(object_1, object_2):
     handler = space.add_collision_handler(collision_types[object_1], collision_types[object_2])
@@ -318,9 +318,9 @@ def add_blood_handler(object_1, object_2):
     handler.separate = count_points
     handlers.append(handler)
 
-create_Human_1(300, 500)
-create_Human_2(700, 500)
-walls()
+create_Human_1(300, 450)
+create_Human_2(700, 450)
+random_circles(space) #сюда вставлять функцию для стен
 head_list[1].color = pygame.Color('green')
 
 add_blood_handler('head_1',"head_2")
@@ -344,8 +344,8 @@ add_blood_handler('body_2',"left_feet_1")
 
 
 def make_text(points_1, points_2):
-    text_1 = font.render('Очки: '+str(points_1), True, 'red')
-    text_2 = font.render('Очки: '+str(points_2), True, 'green2')
+    text_1 = font.render('Жизни: '+str(points_1), True, 'red')
+    text_2 = font.render('Жизни: '+str(points_2), True, 'green2')
     screen.blit(text_1, (20, 20))
     screen.blit(text_2, (800, 20))
 
