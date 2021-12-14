@@ -4,7 +4,6 @@ import math
 from pymunk.vec2d import Vec2d
 
 
-
 class Pear(pygame.sprite.Sprite):
     def __init__(self, space, x, y, filename):
         """Боксёрская груша, пользователь будет ставить её представителей, куда ему захочется,
@@ -17,7 +16,7 @@ class Pear(pygame.sprite.Sprite):
         self.space = space
         self.vs = [(-28, 120), (28, 120), (28, -90), (-28, -90), (0, -100)]
         self.x, self.y = x, y
-        self.mass = 100
+        self.mass = 50
         self.body = self.add_body_pear()
         self.shape = self.add_shape_pear()
         # self.filter = pymunk.ShapeFilter(categories=0b1)
@@ -89,11 +88,16 @@ class Pear(pygame.sprite.Sprite):
 
 class Ball(pygame.sprite.Sprite):# (0, 0) отвечает за положение фиолетовой точки mouse_joint относительно положения курсора
     # Определяет максимальное кол-во ошибок за один шаг
-    def add_ball(self, space, pos):
+    def __init__(self, space):
+        self.space = space
+
+    def add_ball(self, space):
+        pos = (200, 200)
         body = pymunk.Body()
         body.position = Vec2d(*pos)
-        shape = pymunk.Circle(body, 20)
+        shape = pymunk.Circle(body, 50)
         shape.mass = 1
+        shape.color = (255, 25, 255, 255)
         shape.friction = 0.7
         space.add(body, shape)
         return

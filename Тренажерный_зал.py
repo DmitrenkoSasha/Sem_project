@@ -2,9 +2,11 @@ from human import *
 import pymunk.autogeometry
 
 from pymunk.pygame_util import *
+import pymunk.pygame_util
+import random
+#from Окружение_картинки_ломанной import line_around_img
 
-
-from Груша import Pear
+from Груша import Pear, Ball
 
 
 alive = True
@@ -13,6 +15,9 @@ WHITE = (255, 255, 255)
 pygame.init()
 W = 1000
 H = 700
+
+FPS = 60
+
 screen = pygame.display.set_mode((W, H))
 space = pymunk.Space()
 space.gravity = (0, 900)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
@@ -66,8 +71,20 @@ things.append(p1)
 mouse_joint = None
 mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
+
+events = []
+events.append((5.0, Ball(space).add_ball))
+events.append((10.0, Ball(space).add_ball))
+events.sort(key=lambda x: x[0])
+total_time = 0
+
+SMALLBALL = pygame.USEREVENT + 1
+pygame.time.set_timer(SMALLBALL, 100)
+
+small_balls = 100
+
 while alive:
-    screen.fill(WHITE)
+
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
@@ -103,6 +120,22 @@ while alive:
                 mouse_joint.error_bias = (1 - 0.15) ** 60
                 space.add(mouse_joint)
 
+        elif event.type == SMALLBALL:
+            if small_balls <= 0:
+                pygame.time.set_timer(SMALLBALL, 0)
+            for x in range(10):
+                small_balls -= 1
+                mass = 3
+                radius = 8
+                moment = pymunk.moment_for_circle(mass, 0, radius)
+                b = pymunk.Body(mass, moment)
+                c = pymunk.Circle(b, radius)
+                c.friction = 1
+                x = random.randint(100, 400)
+                b.position = x, 0
+
+                space.add(b, c)
+
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             alive = False
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -120,13 +153,28 @@ while alive:
 
     mouse_pos = pygame.mouse.get_pos()
     mouse_body.position = mouse_pos
+
+    if len(events) > 0 and total_time > events[0][0]:
+        t, f = events.pop(0)
+
+        f(space)
+
+    space.step(1 / FPS)  # Независимый цикл пересчитывающий физику
     #items.draw(screen)
+    screen.fill(WHITE)
     space.debug_draw(options)
     show_img_things(things)
+    screen.blit(pygame.image.load('мяч.png').convert_alpha(), (0, 0))
 
-    pygame.display.update()  # Обновляет весь экран, если не передать аргумент
 
-    space.step(1 / 50)  # Независимый цикл пересчитывающий физику
-    clock.tick(30)
+    pygame.display.flip()
+
+    dt = clock.tick(FPS)
+    total_time += dt / 1000
+
+    #pygame.display.update()  # Обновляет весь экран, если не передать аргумент
+
+
+    #clock.tick(30)
 
 pygame.quit()
