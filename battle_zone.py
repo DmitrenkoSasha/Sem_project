@@ -29,6 +29,12 @@ head_list = []
 human_1_shapes = []
 human_2_shapes = []
 
+pygame.mixer.music.load('фон.wav')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play()
+sound2 = pygame.mixer.Sound('удар по груше.wav')
+
+
 collision_types = {
     "head_1": 1,
     "body_1": 2,
@@ -253,6 +259,8 @@ def draw_blood(arbiter, space, data):
         pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)
         for i in range(100):
             create_blood(space, p, 2)
+        sound2.play()
+
         ### Draw stuff
         balls_to_remove = []
         for ball in balls:
