@@ -1,20 +1,16 @@
-import pygame
-from pymunk.pygame_util import *
-from typing import List
-import random
-import pymunk
 import pymunk.pygame_util
-from pymunk.vec2d import Vec2d
 from pygame.locals import *
+from pymunk.vec2d import Vec2d
+
 from textures import *
+
 
 def main_battle(number_of_room):
     alive = True
-    WHITE = (255, 255, 255)
+    white = (255, 255, 255)
 
     pygame.init()
-    W = 1000
-    H = 700
+
     screen = pygame.display.set_mode((W, H))
     bg = pygame.image.load(r'background.png')
     space = pymunk.Space()
@@ -26,7 +22,6 @@ def main_battle(number_of_room):
     draw_options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     balls = []
     handlers = []
-    balls_to_remove = []
     head_list = []
     human_1_shapes = []
     human_2_shapes = []
@@ -35,7 +30,6 @@ def main_battle(number_of_room):
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
     sound2 = pygame.mixer.Sound('удар по груше.wav')
-
 
     collision_types = {
         "head_1": 1,
@@ -60,7 +54,6 @@ def main_battle(number_of_room):
         "left_leg_2": 19,
         "left_feet_2": 20,
     }
-
 
     def add_ball(pos, category, mask, collision_type):
         body = pymunk.Body()
@@ -185,8 +178,9 @@ def main_battle(number_of_room):
 
         c_body_right_leg = pymunk.PivotJoint(right_leg_2, telo_2, (x, y + 30 * scale))
         c_body_left_leg = pymunk.PivotJoint(left_leg_2, telo_2, (x, y + 30 * scale))
-        spring_legs = pymunk.DampedSpring(left_feet_2, right_feet_2, (-20 * scale, 70 * scale), (20 * scale, 70 * scale),
-                                          40 * scale, 500, 50)
+        spring_legs = pymunk.DampedSpring(left_feet_2, right_feet_2, (-20 * scale, 70 * scale),
+                                          (20 * scale, 70 * scale), 40 * scale, 500, 50)
+
         spring_legs_2 = pymunk.DampedSpring(left_leg_2, right_leg_2, (-20 * scale, 50 * scale),
                                             (20 * scale, 50 * scale), 50 * scale, 500, 50)
         spring_body_right_leg = pymunk.DampedSpring(telo_2, right_feet_2, (0, 20 * scale), (20 * scale, 70 * scale),
@@ -201,12 +195,14 @@ def main_battle(number_of_room):
         space.add(spring_body_left_leg)
 
         right_arm_2 = add_lever_2((x, y), (0, -5 * scale), (15 * scale, -20 * scale), 16, 985, 'right_arm_2')
-        right_hand_2 = add_lever_2((x, y), (15 * scale, -20 * scale), (40 * scale, -45 * scale), 32, 991, 'right_hand_2')
+        right_hand_2 = add_lever_2((x, y), (15 * scale, -20 * scale),
+                                   (40 * scale, -45 * scale), 32, 991, 'right_hand_2')
         c_right_arm = pymunk.PivotJoint(right_arm_2, right_hand_2, (x + 15 * scale, y - 20 * scale))
         space.add(c_right_arm)
 
         left_arm_2 = add_lever_2((x, y), (0, -5 * scale), (-15 * scale, -20 * scale), 4, 997, 'left_arm_2')
-        left_hand_2 = add_lever_2((x, y), (-15 * scale, -20 * scale), (-40 * scale, -45 * scale), 8, 1019, 'left_hand_2')
+        left_hand_2 = add_lever_2((x, y), (-15 * scale, -20 * scale),
+                                  (-40 * scale, -45 * scale), 8, 1019, 'left_hand_2')
         c_left_arm = pymunk.PivotJoint(left_arm_2, left_hand_2, (x - 15 * scale, y - 20 * scale))
         space.add(c_left_arm)
 
@@ -222,37 +218,24 @@ def main_battle(number_of_room):
         space.add(spring_body_left_arm)
 
         complect_2 = ([head_2, telo_2, right_arm_2, left_arm_2,
-                          right_leg_2, left_leg_2])
+                      right_leg_2, left_leg_2])
         points_2 = 100
-
-    def walls():
-        floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 50)
-        space.add(floor_shape)
-
-        left_wall_shape = pymunk.Segment(space.static_body, (0, 0), (0, H), 50)
-        space.add(left_wall_shape)
-
-        right_wall_shape = pymunk.Segment(space.static_body, (W, 0), (W, H), 50)
-        space.add(right_wall_shape)
-
-        roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
-        space.add(roof_shape)
 
     def create_blood(space, center, radius):
         body = pymunk.Body(1000, 1000)
         body.position = center
         shape = pymunk.Circle(body, radius)
         shape.color = pygame.Color('red')
-        shape.filter = pymunk.ShapeFilter(categories=1024 , mask=0)
+        shape.filter = pymunk.ShapeFilter(categories=1024, mask=0)
         space.add(body, shape)  # Объединили душу и тело
         v1 = random.randint(-300, 300)
         v2 = random.randint(30, 300)
-        body.velocity = (v1,v2)
+        body.velocity = (v1, v2)
         balls.append(shape)
         return shape
 
     def draw_blood(arbiter, space, data):
-        global complect_1, complect_2
+
         for c in arbiter.contact_point_set.points:
             r = max(3, abs(c.distance * 5))
             r = int(r)
@@ -263,7 +246,7 @@ def main_battle(number_of_room):
                 create_blood(space, p, 2)
             sound2.play()
 
-            ### Draw stuff
+            #  Draw stuff
             balls_to_remove = []
             for ball in balls:
                 if ball.body.position.y > 700:
@@ -276,12 +259,15 @@ def main_battle(number_of_room):
                 balls.remove(ball)
         return True
 
-    def count_points(arbiter, space, data):
+    def count_points(arbiter,  space, data):
+        """ Считает очки за столкновения человечков
+        space: параметр необходимый collision handler
+        data:  параметр необходимый collision handler
+        """
         global points_1, points_2
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
-        #print(part_1)
-        #print(part_2)
+
         if part_1 == head_list[0]:
             if part_2 == head_list[1]:
                 points_1 -= 2
@@ -331,6 +317,7 @@ def main_battle(number_of_room):
     create_Human_1(300, 450)
     create_Human_2(700, 450)
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
+    room.run()
 
     head_list[1].color = pygame.Color('green')
 
@@ -353,13 +340,11 @@ def main_battle(number_of_room):
     add_blood_handler('body_2', "right_feet_1")
     add_blood_handler('body_2', "left_feet_1")
 
-
-    def make_text(points_1, points_2):
-        text_1 = font.render('Жизни: '+str(points_1), True, 'red')
-        text_2 = font.render('Жизни: '+str(points_2), True, 'green2')
+    def make_text(points1, points2):
+        text_1 = font.render('Жизни: '+str(points1), True, 'red')
+        text_2 = font.render('Жизни: '+str(points2), True, 'green2')
         screen.blit(text_1, (20, 20))
         screen.blit(text_2, (800, 20))
-
 
     def check_event_human_1():
         """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
@@ -375,7 +360,6 @@ def main_battle(number_of_room):
         if pygame.key.get_pressed()[K_DOWN]:
             for part in complect_1:
                 part.velocity += (0, 30)
-
 
     def check_event_human_2():
         """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
@@ -400,8 +384,8 @@ def main_battle(number_of_room):
                 alive = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
-        screen.fill(WHITE)
-        screen.blit(bg, (0,0))
+        screen.fill(white)
+        screen.blit(bg, (0, 0))
         while_rooms_events(screen, room)
         space.step(1 / 40)  # Независимый цикл пересчитывающий физику
         space.debug_draw(draw_options)
@@ -412,6 +396,7 @@ def main_battle(number_of_room):
         clock.tick(30)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main_battle(0)
