@@ -14,7 +14,7 @@ class Pear(pygame.sprite.Sprite):
         self.image = pygame.image.load(filename).convert_alpha()  # Графическое представление спрайта
         #self.rect = self.image.get_rect(center=(x, 200))  # Положение и размер спрайта
         self.space = space
-        self.vs = [(-28, 120), (28, 120), (28, -90), (-28, -90), (0, -100)]
+        self.vs = [(-27, 115), (25, 115), (27, -85), (-27, -84), (0, -95)]
         self.x, self.y = x, y
         self.mass = 50
         self.body = self.add_body_pear()
@@ -22,11 +22,10 @@ class Pear(pygame.sprite.Sprite):
         # self.filter = pymunk.ShapeFilter(categories=0b1)
         self.filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1)
 
-        self.bb = pymunk.BB(0, 0, self.image.get_width(), self.image.get_height())
-
 
     def add_body_pear(self):
         """Добавляет тело груши и точку вращения. Вызывается внутри класса Pear"""
+
         moment = pymunk.moment_for_poly(self.mass, self.vs)
         body = pymunk.Body(self.mass, moment)
         body.position = (self.x, self.y)
