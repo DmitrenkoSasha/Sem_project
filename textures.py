@@ -69,29 +69,55 @@ def common_walls(space):
     space.add(roof_shape)
 
 
-def four_extra_walls(space):
-    common_walls(space)
-
-    up_wall = pymunk.Segment(space.static_body, (W/2, 0), (W/2, H*2/7), 50)
-    space.add(up_wall)
-    down_wall = pymunk.Segment(space.static_body, (W/2, H*5/7), (W/2, H), 50)
-    space.add(down_wall)
-    right_wall = pymunk.Segment(space.static_body, (0, H/2), (W*0.3, H/2), 50)
-    space.add(right_wall)
-    left_wall = pymunk.Segment(space.static_body, (W * 0.7, H / 2), (W, H / 2), 50)
-    space.add(left_wall)
-
-class three_levels():
+class typical_walls:
     def __init__(self, space):
         self.space = space
-        self.img = pygame.image.load('мяч.png').convert_alpha()
+
+    def run(self):
+        common_walls(self.space)
+
+
+
+class four_extra_walls:
+    def __init__(self, space):
+        self.space = space
+
+    def run(self):
+        common_walls(self.space)
+
+        up_wall = pymunk.Segment(self.space.static_body, (W/2, 0), (W/2, H*2/7), 50)
+        self.space.add(up_wall)
+        down_wall = pymunk.Segment(self.space.static_body, (W/2, H*5/7), (W/2, H), 50)
+        self.space.add(down_wall)
+        right_wall = pymunk.Segment(self.space.static_body, (0, H/2), (W*0.3, H/2), 50)
+        self.space.add(right_wall)
+        left_wall = pymunk.Segment(self.space.static_body, (W * 0.7, H / 2), (W, H / 2), 50)
+        self.space.add(left_wall)
+
+class three_levels:
+    def __init__(self, space):
+        """pos_x: расстояние от левой стены до левого края платформы"""
+        self.space = space
+        self.img = pygame.image.load('платформа.png').convert_alpha()
+        self.width = round(W * 0.7)
+        self.height = 50
+        self.pos_x = W / 6
+
 
     def run(self):
         """Функция, запускающаяся в battle_zone после создания комнаты"""
         common_walls(self.space)
-        create_floor(self.space, W / 2, H / 4)  # TODO избавиться от глобальных W, H
-        create_floor(self.space, W / 2, H / 2)
-        create_floor(self.space, W / 2, 3 * H / 4)
+        line_set = lines_around_img('платформа.png', self.width, self.height)
+
+        for line in line_set:
+            for i in range(3):
+                for j in range(len(line) - 1):
+                    shape = pymunk.Segment(self.space.static_body, line[j] +
+                                           (self.pos_x, H / 4 + H/4 * i), line[j + 1] + (self.pos_x, H / 4 + H/4 * i), 1)
+                    shape.friction = 0.5
+                    shape.elasticity = 10.0
+                    shape.color = (255, 255, 255, 255)
+                    self.space.add(shape)
 
 
 class random_circle_room:
@@ -109,10 +135,10 @@ class random_circle_room:
 
         line_set = lines_around_img('мяч.png', self.width, self.height)
 
-        # Каждый круг описываем ломанной
+        #  Каждый круг описываем ломанной
         for i in range(1, self.amount, 1):
-            # Положение одного круга
-            x = random.randint(50, W - 100) # TODO избавиться от глобальных переменных
+            #  Положение одного круга
+            x = random.randint(50, W - 100)  # TODO избавиться от глобальных переменных
             y = random.randint(50, H - 100)
             self.coord.append((x, y))
             for line in line_set:
@@ -126,11 +152,14 @@ class random_circle_room:
                     shape.color = (255, 255, 255, 255)
                     self.space.add(shape)
 
+class reverse_gravity:
+    def __init__(self, space):
+        self.space = space
 
-def gravity_change(space):
-    common_walls(space)
+    def run(self):
+        common_walls(self.space)
+        self.space.gravity = (0, -200)
 
-    space.gravity = (0, -200)
 
 def while_rooms_events(screen, room):
     """Вызывается в while loop в battle_zone. Для каждой комнаты отображает нужную картинку"""
@@ -140,13 +169,21 @@ def while_rooms_events(screen, room):
         for i in range(room.amount-1):
             (img_x, img_y) = room.coord[i]
             screen.blit(img, (img_x, img_y))
+    elif type(room) is three_levels:
+        img = pygame.transform.scale(room.img, (room.width, room.height))
+        screen.blit(img, (room.pos_x, H / 4))
+        screen.blit(img, (room.pos_x, H / 2))
+        screen.blit(img, (room.pos_x, 3*H / 4))
+
 
 def create_room(space, number_of_room):
     """Открывает нужную комнату"""
     if number_of_room == 0:
-        common_walls(space)
+        return typical_walls(space)
+
     if number_of_room == 1:
-        four_extra_walls(space)
+        return four_extra_walls(space)
+
     if number_of_room == 2:
         return random_circle_room(space)
 
@@ -154,4 +191,4 @@ def create_room(space, number_of_room):
         return three_levels(space)
 
     if number_of_room == 4:
-        gravity_change(space)
+        return reverse_gravity(space)
