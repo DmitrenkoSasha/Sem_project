@@ -3,6 +3,7 @@ import random
 import pygame
 W = 1000
 H = 700
+
 def create_floor(space, x, y):
     floor_body = pymunk.Body(body_type=pymunk.Body.STATIC)
     floor_body.position = x, y
@@ -64,3 +65,15 @@ def gravity_change(space):
     common_walls(space)
 
     space.gravity = (0, -200)
+
+def create_room(space, number_of_room):
+    if number_of_room == 0:
+        common_walls(space)
+    if number_of_room == 1:
+        four_extra_walls(space)
+    if number_of_room == 2:
+        three_levels(space)
+    if number_of_room == 3:
+        random_circles(space)
+    if number_of_room == 4:
+        gravity_change(space)

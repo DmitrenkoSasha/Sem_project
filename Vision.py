@@ -1,35 +1,73 @@
 # coding: utf-8
 # license: GPLv3
 
-import pygame as pg
+from tkinter import *
+from battle_zone import *
+from gym import *
+from functools import partial
 
-class Drawer:
-    def __init__(self, screen):
-        self.screen = screen
+def clicked_gym():
+    main_gym()
 
-    def update(self, figures, ui):
-        self.screen.fill('white')
-        for figure in figures:
-            figure.draw(self.screen)
+def clicked_manual():
+    show_manual()
 
-        ui.blit()
-        ui.update()
-        pg.display.update()
+def clicked(number_of_room):
+    main_battle(number_of_room)
 
-class DrawableObject:
-    def __init__(self, obj):
-        self.obj = obj
-        self.R = obj.R  # радиус тела в пикселях
-        self.color = obj.color
-        self.x = obj.x
-        self.y = obj.y
-        self.type = obj.type
-        self.m = obj.m
-        self.Vx = obj.Vx
-        self.Vy = obj.Vy
-        self.v = (obj.Vx ** 2 + obj.Vy ** 2) ** (0.5)
+def show_menu_2():
+    window.destroy()
+    show_menu()
 
-    def draw(self, surface):
-        pass
-        #pg.draw.circle(surface, self.color, (scale_x(self.x), scale_y(self.y)), self.R)
-        #pg.draw.circle(surface, 'black', (scale_x(self.x), scale_y(self.y)), self.R, 2)
+def show_rooms():
+    global window
+    window.destroy()
+    window = Tk()
+    window.title("Stickmen ahead")
+    window.geometry('1000x700')
+    btn = Button(window, text="Обычная комната!", command=partial(clicked, 0))
+    btn.grid(column=0, row=0)
+    btn = Button(window, text="Восемь стен!", command=partial(clicked, 1))
+    btn.grid(column=0, row=1)
+    btn = Button(window, text="Три этажа!", command=partial(clicked, 2))
+    btn.grid(column=0, row=2)
+    btn = Button(window, text="Случайные препятствия!", command=partial(clicked, 3))
+    btn.grid(column=0, row=3)
+    btn = Button(window, text="Поломка гравитации!", command=partial(clicked, 4))
+    btn.grid(column=0, row=4)
+    btn = Button(window, text="В меню", command=show_menu_2)
+    btn.grid(column=0, row=5)
+    window.mainloop()
+
+def show_menu():
+    global window
+    window = Tk()
+    window.title("Stickmen ahead")
+    window.geometry('1000x700')
+    alive = True
+    btn = Button(window, text="Тренажёрный зал!", command=clicked_gym)
+    btn.grid(column=0, row=0)
+    btn = Button(window, text="Режим PvP!", command=show_rooms)
+    btn.grid(column=0, row=1)
+    btn = Button(window, text="Управление!", command=clicked_manual)
+    btn.grid(column=0, row=2)
+    btn = Button(window, text="Выход!", command=quit)
+    btn.grid(column=0, row=3)
+    window.mainloop()
+
+def show_manual():
+    global window
+    window.destroy()
+    window = Tk()
+    window.title("Stickmen ahead")
+    window.geometry('1000x700')
+    lbl = Label(window, text="Игрок 1 - стрелки на клавиатуре")
+    lbl.grid(column=0, row=0)
+    lbl = Label(window, text="Игрок 2 - кнопки WASD")
+    lbl.grid(column=0, row=2)
+    btn = Button(window, text="В меню", command=show_menu_2)
+    btn.grid(column=0, row=4)
+    window.mainloop()
+
+show_menu()
+
