@@ -86,15 +86,15 @@ class Pear(pygame.sprite.Sprite):
         pass
 
 
-class Ball(pygame.sprite.Sprite):# (0, 0) отвечает за положение фиолетовой точки mouse_joint относительно положения курсора
-    # Определяет максимальное кол-во ошибок за один шаг
-    def __init__(self, space):
+class Ball(pygame.sprite.Sprite):
+
+    def __init__(self, space, pos_x, pos_y):
         self.space = space
+        self.pos = (pos_x, pos_y)
 
     def add_ball(self, space):
-        pos = (200, 200)
         body = pymunk.Body()
-        body.position = Vec2d(*pos)
+        body.position = Vec2d(*self.pos)
         shape = pymunk.Circle(body, 50)
         shape.mass = 1
         shape.color = (255, 25, 255, 255)
