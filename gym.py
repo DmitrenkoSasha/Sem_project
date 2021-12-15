@@ -15,7 +15,7 @@ def main_gym():
     pygame.init()
     W = 1000
     H = 700
-
+    bg = pygame.image.load(r'background.png')
     FPS = 60
 
     screen = pygame.display.set_mode((W, H))
@@ -201,6 +201,7 @@ def main_gym():
         space.step(1 / FPS)  # Независимый цикл пересчитывающий физику
         #items.draw(screen)
         screen.fill(WHITE)
+        screen.blit(bg, (0, 0))
         space.debug_draw(options)
         show_img_things(things)
         screen.blit(pygame.image.load('мяч.png').convert_alpha(), (img_x, img_y))

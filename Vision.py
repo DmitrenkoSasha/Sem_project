@@ -59,7 +59,6 @@ def show_menu(background):
     image = ImageTk.PhotoImage(imag)
     panel = Label(window, image=image)
     panel.pack(side="top", fill="both", expand="no")
-    font1 = pygame.font.SysFont('chalkduster.ttf', 72)
     btn = Button(window, text="Тренажёрный зал!", command=clicked_gym).place(x=250, y=100)
     btn = Button(window, text="Режим PvP!", command=clicked_rooms).place(x=250, y=200)
     btn = Button(window, text="Управление!", command=clicked_manual).place(x=250, y=300)

@@ -16,6 +16,7 @@ def main_battle(number_of_room):
     W = 1000
     H = 700
     screen = pygame.display.set_mode((W, H))
+    bg = pygame.image.load(r'background.png')
     space = pymunk.Space()
     scale = 1.2
     space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
@@ -329,9 +330,7 @@ def main_battle(number_of_room):
 
     create_Human_1(300, 450)
     create_Human_2(700, 450)
-
-    room = create_room(space, 3)  # сюда обращаться за нужной комнатой
-    room.run()
+    room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
 
     head_list[1].color = pygame.Color('green')
 
@@ -402,6 +401,7 @@ def main_battle(number_of_room):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
         screen.fill(WHITE)
+        screen.blit(bg, (0,0))
         while_rooms_events(screen, room)
         space.step(1 / 40)  # Независимый цикл пересчитывающий физику
         space.debug_draw(draw_options)
