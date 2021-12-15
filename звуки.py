@@ -4,7 +4,7 @@ import sys
 pg.init()
 sc = pg.display.set_mode((400, 300))
 
-pg.mixer.music.load('рисование карандашом.wav')
+pg.mixer.music.load('.wav')
 pg.mixer.music.play()
 
 sound1 = pg.mixer.Sound('бросить карандаш.wav')
