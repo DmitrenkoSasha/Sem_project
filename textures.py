@@ -1,6 +1,8 @@
 import pymunk
 import random
 import pygame
+import pymunk.autogeometry
+import pymunk.pygame_util
 W = 1000
 H = 700
 
@@ -53,20 +55,73 @@ def three_levels(space):
     create_floor(space, W/2, H/2)
     create_floor(space, W/2, 3*H/4)
 
-def random_circles(space):
-    common_walls(space)
+class random_circle_room():
+    def __init__(self, space):
+        self.space = space
+        self.amount = 20
+        self.size = (40, 40)
+        self.coord = []  # Список с координатами шариков, который используется while_rooms_events
 
-    for i in range (1, 22, 1):
-        x = random.randint(100, W-100)
-        y = random.randint(100, H-100)
-        create_square(space, x/2, y/2)
+    def lines_around_img(self, filename, w, h):
+        logo_img = pygame.image.load(filename).convert_alpha()
+        logo_img = pygame.transform.scale(logo_img, (w, h))
+        logo_bb = pymunk.BB(0, 0, logo_img.get_width(), logo_img.get_height())
+        logo_img.lock()
+
+        def sample_func(point):
+            try:
+                p = pymunk.pygame_util.to_pygame(point, logo_img)
+                color = logo_img.get_at(p)
+
+                return color.a
+
+            except:
+                return 0
+
+        line_set = pymunk.autogeometry.march_soft(logo_bb, logo_img.get_width(), logo_img.get_height(), 99, sample_func)
+        logo_img.unlock()
+
+        return line_set
+
+    def run(self):
+        common_walls(self.space)
+
+        line_set = self.lines_around_img('мяч.png', 50, 50)
+        #coords = []  # Список с координатами шариков, который используется while_rooms_events
+        for i in range(1, self.amount, 1):
+            x = random.randint(100, W-100)
+            y = random.randint(100, H-100)
+            self.coord.append((x, y))
+            for line in line_set:
+
+                # Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm
+                line = pymunk.autogeometry.simplify_curves(line, 0.7)
+
+                for i in range(len(line) - 1):
+                    shape = pymunk.Segment(self.space.static_body, line[i] + (x, y), line[i + 1] + (x, y), 1)
+                    shape.friction = 0.5
+                    shape.color = (255, 0, 0, 0)
+                    self.space.add(shape)
+            #create_square(space, x/2, y/2)
+
 
 def gravity_change(space):
     common_walls(space)
 
     space.gravity = (0, -200)
 
+def while_rooms_events(screen, room):
+    """Вызывается в while loop в battle_zone"""
+
+    if type(room) is random_circle_room:
+        img = pygame.image.load('мяч.png').convert_alpha()
+        img = pygame.transform.scale(img, (50, 50))
+        for i in range(room.amount-1):
+            (img_x, img_y) = room.coord[i]
+            screen.blit(img, (img_x, img_y))
+
 def create_room(space, number_of_room):
+    """Открывает нужную комнату"""
     if number_of_room == 0:
         common_walls(space)
     if number_of_room == 1:
@@ -74,6 +129,7 @@ def create_room(space, number_of_room):
     if number_of_room == 2:
         three_levels(space)
     if number_of_room == 3:
-        random_circles(space)
+        return random_circle_room(space)
+        #random_circles(space)
     if number_of_room == 4:
         gravity_change(space)

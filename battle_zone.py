@@ -279,8 +279,8 @@ def main_battle(number_of_room):
         global points_1, points_2
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
-        print(part_1)
-        print(part_2)
+        #print(part_1)
+        #print(part_2)
         if part_1 == head_list[0]:
             if part_2 == head_list[1]:
                 points_1 -= 2
@@ -329,27 +329,30 @@ def main_battle(number_of_room):
 
     create_Human_1(300, 450)
     create_Human_2(700, 450)
-    create_room(space, number_of_room) #сюда вставлять функцию для стен
+
+    room = create_room(space, 3)  # сюда обращаться за нужной комнатой
+    room.run()
+
     head_list[1].color = pygame.Color('green')
 
-    add_blood_handler('head_1',"head_2")
-    add_blood_handler('head_1',"right_hand_2")
-    add_blood_handler('head_1',"right_feet_2")
-    add_blood_handler('head_1',"left_hand_2")
-    add_blood_handler('head_1',"left_feet_2")
-    add_blood_handler('body_1',"right_hand_2")
-    add_blood_handler('body_1',"left_hand_2")
-    add_blood_handler('body_1',"right_feet_2")
-    add_blood_handler('body_1',"left_feet_2")
+    add_blood_handler('head_1', "head_2")
+    add_blood_handler('head_1', "right_hand_2")
+    add_blood_handler('head_1', "right_feet_2")
+    add_blood_handler('head_1', "left_hand_2")
+    add_blood_handler('head_1', "left_feet_2")
+    add_blood_handler('body_1', "right_hand_2")
+    add_blood_handler('body_1', "left_hand_2")
+    add_blood_handler('body_1', "right_feet_2")
+    add_blood_handler('body_1', "left_feet_2")
 
-    add_blood_handler('head_2',"right_hand_1")
-    add_blood_handler('head_2',"right_feet_1")
-    add_blood_handler('head_2',"left_hand_1")
-    add_blood_handler('head_2',"left_feet_1")
-    add_blood_handler('body_2',"right_hand_1")
-    add_blood_handler('body_2',"left_hand_1")
-    add_blood_handler('body_2',"right_feet_1")
-    add_blood_handler('body_2',"left_feet_1")
+    add_blood_handler('head_2', "right_hand_1")
+    add_blood_handler('head_2', "right_feet_1")
+    add_blood_handler('head_2', "left_hand_1")
+    add_blood_handler('head_2', "left_feet_1")
+    add_blood_handler('body_2', "right_hand_1")
+    add_blood_handler('body_2', "left_hand_1")
+    add_blood_handler('body_2', "right_feet_1")
+    add_blood_handler('body_2', "left_feet_1")
 
 
     def make_text(points_1, points_2):
@@ -399,9 +402,11 @@ def main_battle(number_of_room):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
         screen.fill(WHITE)
+        while_rooms_events(screen, room)
         space.step(1 / 40)  # Независимый цикл пересчитывающий физику
         space.debug_draw(draw_options)
         make_text(points_1, points_2)
+
         pygame.display.update()  # Обновляет весь экран, если не передать аргумент
 
         clock.tick(30)
