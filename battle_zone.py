@@ -1,10 +1,4 @@
-import pygame
-from pymunk.pygame_util import *
-from typing import List
-import random
-import pymunk
 import pymunk.pygame_util
-from pymunk.vec2d import Vec2d
 from pygame.locals import *
 from pymunk.vec2d import Vec2d
 
@@ -24,7 +18,7 @@ def main_battle(number_of_room):
     scale = 1.2
     space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
     clock = pygame.time.Clock()
-    font = pygame.font.SysFont("Arial", 30)
+    font = pygame.font.SysFont("WeAreDIMDAM", 50)
     draw_options = pymunk.pygame_util.DrawOptions(screen)
     draw_options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     balls = []
@@ -38,6 +32,8 @@ def main_battle(number_of_room):
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
     sound2 = pygame.mixer.Sound('удар по груше.wav')
+    hart_img = pygame.image.load('hart.png')
+    hart_img = pygame.transform.scale(hart_img, (300, 90))
 
     def create_blood(space, center, radius):
         body = pymunk.Body(1000, 1000)
@@ -53,6 +49,7 @@ def main_battle(number_of_room):
         return shape
 
     def draw_blood(arbiter, space, data):
+
         for c in arbiter.contact_point_set.points:
             r = max(3, abs(c.distance * 5))
             r = int(r)
@@ -82,7 +79,6 @@ def main_battle(number_of_room):
         data:  параметр необходимый collision handler
         """
         global points_1, points_2
-    def count_points(arbiter, space, data):
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
         #print(part_1)
@@ -149,6 +145,7 @@ def main_battle(number_of_room):
     for shape in human_1_shapes:
         print(shape.collision_type)
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
+    room.run()
 
     head_list[1].color = pygame.Color('green')
 
@@ -171,42 +168,10 @@ def main_battle(number_of_room):
     add_blood_handler(11, 9)
 
     def make_text(points1, points2):
-        text_1 = font.render('Жизни: '+str(points1), True, 'red')
-        text_2 = font.render('Жизни: '+str(points2), True, 'green2')
-        screen.blit(text_1, (20, 20))
-        screen.blit(text_2, (800, 20))
-
-
-    def check_event_human_1():
-        """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
-        if pygame.key.get_pressed()[K_RIGHT]:
-            for part in complect_1:
-                part.velocity += (30, 0)
-        if pygame.key.get_pressed()[K_LEFT]:
-            for part in complect_1:
-                part.velocity += (-30, 0)
-        if pygame.key.get_pressed()[K_UP]:
-            for part in complect_1:
-                part.velocity += (0, -30)
-        if pygame.key.get_pressed()[K_DOWN]:
-            for part in complect_1:
-                part.velocity += (0, 30)
-
-
-    def check_event_human_2():
-        """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
-        if pygame.key.get_pressed()[K_d]:
-            for part in complect_2:
-                part.velocity += (30, 0)
-        if pygame.key.get_pressed()[K_a]:
-            for part in complect_2:
-                part.velocity += (-30, 0)
-        if pygame.key.get_pressed()[K_w]:
-            for part in complect_2:
-                part.velocity += (0, -30)
-        if pygame.key.get_pressed()[K_s]:
-            for part in complect_2:
-                part.velocity += (0, 30)
+        text_1 = font.render(str(points1), True, 'red')
+        text_2 = font.render(str(points2), True, 'green2')
+        screen.blit(text_1, (160, 0))
+        screen.blit(text_2, (860, 0))
 
     while alive:
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
@@ -216,11 +181,14 @@ def main_battle(number_of_room):
                 alive = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
-        screen.fill(WHITE)
-        screen.blit(bg, (0,0))
+        screen.fill(white)
+        screen.blit(bg, (0, 0))
         while_rooms_events(screen, room)
+
         space.step(1 / 40)  # Независимый цикл пересчитывающий физику
         space.debug_draw(draw_options)
+        screen.blit(hart_img, (0, -25))
+        screen.blit(hart_img, (700, -25))
         make_text(human_1.points, human_2.points)
 
         pygame.display.update()  # Обновляет весь экран, если не передать аргумент
