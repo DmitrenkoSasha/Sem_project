@@ -92,7 +92,7 @@ def main_gym():
 
     h1 = Human(space_gym)
     humans.append(h1)
-    h1.create_Human(400, 100)
+    h1.create_Human(400, 100, 0)
     walls()
 
     p1 = Pear(space_gym, W // 3, H // 2, 'груша.png')
