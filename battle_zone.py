@@ -24,7 +24,25 @@ def main_battle(number_of_room):
     pygame.init()
 
     screen = pygame.display.set_mode((W, H))
-    bg = pygame.image.load(r'background.png')
+
+    bg1 = pygame.image.load(r'background.png')
+    bg2 = pygame.image.load(r'задний план\фон2.jpg')
+    bg4 = pygame.image.load(r'задний план\фон3.png')
+    bg5 = pygame.image.load(r'задний план\фон4.jpg')
+    bg6 = pygame.image.load(r'задний план\фон5.jpg')
+    bg6 = pygame.image.load(r'задний план\фон6.jpg')
+    bg7 = pygame.image.load(r'задний план\фон7.png')
+    bg8 = pygame.image.load(r'задний план\фон8.png')
+    bg9 = pygame.image.load(r'задний план\фон9.jpg')
+    bg10 = pygame.image.load(r'задний план\фон10.jpg')
+    bg12 = pygame.image.load(r'задний план\фон12.jpg')
+    bg13 = pygame.image.load(r'задний план\фон13.jpg')
+    bg14 = pygame.image.load(r'задний план\фон14.jpg')
+
+    bgss = [bg1, bg2, bg4, bg5, bg6, bg7, bg8, bg9, bg10, bg12, bg13, bg14]
+    i = random.randint(0, 11)
+
+    bg = bgss[i]
     space = pymunk.Space()
     scale = 1.2
     space.gravity = (0, 100)  #
