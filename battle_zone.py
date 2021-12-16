@@ -6,16 +6,18 @@ import pymunk
 import pymunk.pygame_util
 from pymunk.vec2d import Vec2d
 from pygame.locals import *
+from pymunk.vec2d import Vec2d
+
 from textures import *
 from human import *
 
+
 def main_battle(number_of_room):
     alive = True
-    WHITE = (255, 255, 255)
+    white = (255, 255, 255)
 
     pygame.init()
-    W = 1000
-    H = 700
+
     screen = pygame.display.set_mode((W, H))
     bg = pygame.image.load(r'background.png')
     space = pymunk.Space()
@@ -42,11 +44,11 @@ def main_battle(number_of_room):
         body.position = center
         shape = pymunk.Circle(body, radius)
         shape.color = pygame.Color('red')
-        shape.filter = pymunk.ShapeFilter(categories=1024 , mask=0)
+        shape.filter = pymunk.ShapeFilter(categories=1024, mask=0)
         space.add(body, shape)  # Объединили душу и тело
         v1 = random.randint(-300, 300)
         v2 = random.randint(30, 300)
-        body.velocity = (v1,v2)
+        body.velocity = (v1, v2)
         balls.append(shape)
         return shape
 
@@ -61,7 +63,7 @@ def main_battle(number_of_room):
                 create_blood(space, p, 2)
             sound2.play()
 
-            ### Draw stuff
+            #  Draw stuff
             balls_to_remove = []
             for ball in balls:
                 if ball.body.position.y > 700:
@@ -74,6 +76,12 @@ def main_battle(number_of_room):
                 balls.remove(ball)
         return True
 
+    def count_points(arbiter,  space, data):
+        """ Считает очки за столкновения человечков
+        space: параметр необходимый collision handler
+        data:  параметр необходимый collision handler
+        """
+        global points_1, points_2
     def count_points(arbiter, space, data):
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
@@ -142,6 +150,7 @@ def main_battle(number_of_room):
         print(shape.collision_type)
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
 
+    head_list[1].color = pygame.Color('green')
 
     add_blood_handler(0, 13)
     add_blood_handler(0, 15)
@@ -161,12 +170,43 @@ def main_battle(number_of_room):
     add_blood_handler(11, 7)
     add_blood_handler(11, 9)
 
-
-    def make_text(points_1, points_2):
-        text_1 = font.render('Жизни: '+str(points_1), True, 'red')
-        text_2 = font.render('Жизни: '+str(points_2), True, 'green2')
+    def make_text(points1, points2):
+        text_1 = font.render('Жизни: '+str(points1), True, 'red')
+        text_2 = font.render('Жизни: '+str(points2), True, 'green2')
         screen.blit(text_1, (20, 20))
         screen.blit(text_2, (800, 20))
+
+
+    def check_event_human_1():
+        """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
+        if pygame.key.get_pressed()[K_RIGHT]:
+            for part in complect_1:
+                part.velocity += (30, 0)
+        if pygame.key.get_pressed()[K_LEFT]:
+            for part in complect_1:
+                part.velocity += (-30, 0)
+        if pygame.key.get_pressed()[K_UP]:
+            for part in complect_1:
+                part.velocity += (0, -30)
+        if pygame.key.get_pressed()[K_DOWN]:
+            for part in complect_1:
+                part.velocity += (0, 30)
+
+
+    def check_event_human_2():
+        """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
+        if pygame.key.get_pressed()[K_d]:
+            for part in complect_2:
+                part.velocity += (30, 0)
+        if pygame.key.get_pressed()[K_a]:
+            for part in complect_2:
+                part.velocity += (-30, 0)
+        if pygame.key.get_pressed()[K_w]:
+            for part in complect_2:
+                part.velocity += (0, -30)
+        if pygame.key.get_pressed()[K_s]:
+            for part in complect_2:
+                part.velocity += (0, 30)
 
     while alive:
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
@@ -188,6 +228,7 @@ def main_battle(number_of_room):
         clock.tick(30)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main_battle(0)

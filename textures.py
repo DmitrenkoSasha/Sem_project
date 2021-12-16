@@ -1,18 +1,49 @@
-import pymunk
 import random
+
 import pygame
+import pymunk
 import pymunk.autogeometry
 import pymunk.pygame_util
+
 W = 1000
 H = 700
+
+
+def lines_around_img(filename, width, height):
+    """Приближает рисунок кривой
+    filename: название картинки, которую нужно окружить ломанной
+    width: необходимая ширина изображения, каким оно будет видно на экране
+    height: необходимая высота изображения
+    return: pymunk.autogeometry.PolylineSet object - массив координат
+    """
+    logo_img = pygame.image.load(filename).convert_alpha()
+    logo_img = pygame.transform.scale(logo_img, (width, height))
+    logo_bb = pymunk.BB(0, 0, logo_img.get_width(), logo_img.get_height())
+    logo_img.lock()
+
+    def sample_func(point):
+        """Необходима для march_soft
+        return: целое число, отвечающее, как близко расположена ломанная к картинке, отриц. знач. не имеют смысла"""
+        try:
+            p = pymunk.pygame_util.to_pygame(point, logo_img)
+            color = logo_img.get_at(p)
+            return color.a - 100
+        except:
+            return 0
+
+    line_set = pymunk.autogeometry.march_soft(logo_bb, logo_img.get_width(), logo_img.get_height(), 99, sample_func)
+    logo_img.unlock()
+    return line_set
+
 
 def create_floor(space, x, y):
     floor_body = pymunk.Body(body_type=pymunk.Body.STATIC)
     floor_body.position = x, y
-    floor_shape = pymunk.Poly.create_box(floor_body, (W*0.7, 10))
+    floor_shape = pymunk.Poly.create_box(floor_body, (W * 0.7, 10))
     floor_shape.elasticity = 10.0
     floor_shape.friction = 1.0
     space.add(floor_body, floor_shape)
+
 
 def create_square(space, x, y):
     square_body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -22,6 +53,7 @@ def create_square(space, x, y):
     square_shape.friction = 0.1
     square_shape.friction = 1.0
     space.add(square_body, square_shape)
+
 
 def common_walls(space):
     floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 50)
@@ -36,100 +68,127 @@ def common_walls(space):
     roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
     space.add(roof_shape)
 
-def four_extra_walls(space):
-    common_walls(space)
 
-    up_wall = pymunk.Segment(space.static_body, (W/2, 0), (W/2, H*2/7), 50)
-    space.add(up_wall)
-    down_wall = pymunk.Segment(space.static_body, (W/2, H*5/7), (W/2, H), 50)
-    space.add(down_wall)
-    right_wall = pymunk.Segment(space.static_body, (0, H/2), (W*0.3, H/2), 50)
-    space.add(right_wall)
-    left_wall = pymunk.Segment(space.static_body, (W*0.7, H/2), (W, H/2), 50)
-    space.add(left_wall)
-
-def three_levels(space):
-    common_walls(space)
-
-    create_floor(space, W/2, H/4)
-    create_floor(space, W/2, H/2)
-    create_floor(space, W/2, 3*H/4)
-
-class random_circle_room():
+class typical_walls:
     def __init__(self, space):
         self.space = space
-        self.amount = 20
-        self.size = (40, 40)
-        self.coord = []  # Список с координатами шариков, который используется while_rooms_events
-
-    def lines_around_img(self, filename, w, h):
-        logo_img = pygame.image.load(filename).convert_alpha()
-        logo_img = pygame.transform.scale(logo_img, (w, h))
-        logo_bb = pymunk.BB(0, 0, logo_img.get_width(), logo_img.get_height())
-        logo_img.lock()
-
-        def sample_func(point):
-            try:
-                p = pymunk.pygame_util.to_pygame(point, logo_img)
-                color = logo_img.get_at(p)
-
-                return color.a
-
-            except:
-                return 0
-
-        line_set = pymunk.autogeometry.march_soft(logo_bb, logo_img.get_width(), logo_img.get_height(), 99, sample_func)
-        logo_img.unlock()
-
-        return line_set
 
     def run(self):
         common_walls(self.space)
 
-        line_set = self.lines_around_img('мяч.png', 50, 50)
-        #coords = []  # Список с координатами шариков, который используется while_rooms_events
+
+
+class four_extra_walls:
+    def __init__(self, space):
+        self.space = space
+
+    def run(self):
+        common_walls(self.space)
+
+        up_wall = pymunk.Segment(self.space.static_body, (W/2, 0), (W/2, H*2/7), 50)
+        self.space.add(up_wall)
+        down_wall = pymunk.Segment(self.space.static_body, (W/2, H*5/7), (W/2, H), 50)
+        self.space.add(down_wall)
+        right_wall = pymunk.Segment(self.space.static_body, (0, H/2), (W*0.3, H/2), 50)
+        self.space.add(right_wall)
+        left_wall = pymunk.Segment(self.space.static_body, (W * 0.7, H / 2), (W, H / 2), 50)
+        self.space.add(left_wall)
+
+class three_levels:
+    def __init__(self, space):
+        """pos_x: расстояние от левой стены до левого края платформы"""
+        self.space = space
+        self.img = pygame.image.load('платформа.png').convert_alpha()
+        self.width = round(W * 0.7)
+        self.height = 50
+        self.pos_x = W / 6
+
+
+    def run(self):
+        """Функция, запускающаяся в battle_zone после создания комнаты"""
+        common_walls(self.space)
+        line_set = lines_around_img('платформа.png', self.width, self.height)
+
+        for line in line_set:
+            for i in range(3):
+                for j in range(len(line) - 1):
+                    shape = pymunk.Segment(self.space.static_body, line[j] +
+                                           (self.pos_x, H / 4 + H/4 * i), line[j + 1] + (self.pos_x, H / 4 + H/4 * i), 1)
+                    shape.friction = 0.5
+                    shape.elasticity = 10.0
+                    shape.color = (255, 255, 255, 255)
+                    self.space.add(shape)
+
+
+class random_circle_room:
+    def __init__(self, space):
+        self.space = space
+        self.amount = 20
+        self.width = 40
+        self.height = 40
+        self.coord = []  # Список с координатами шариков, который используется while_rooms_events
+        self.img = pygame.image.load('мяч.png').convert_alpha()
+
+    def run(self):
+        """Функция, запускающаяся в battle_zone после создания комнаты"""
+        common_walls(self.space)
+
+        line_set = lines_around_img('мяч.png', self.width, self.height)
+
+        #  Каждый круг описываем ломанной
         for i in range(1, self.amount, 1):
-            x = random.randint(100, W-100)
-            y = random.randint(100, H-100)
+            #  Положение одного круга
+            x = random.randint(50, W - 100)  # TODO избавиться от глобальных переменных
+            y = random.randint(50, H - 100)
             self.coord.append((x, y))
             for line in line_set:
 
                 # Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm
                 line = pymunk.autogeometry.simplify_curves(line, 0.7)
 
-                for i in range(len(line) - 1):
-                    shape = pymunk.Segment(self.space.static_body, line[i] + (x, y), line[i + 1] + (x, y), 1)
+                for j in range(len(line) - 1):
+                    shape = pymunk.Segment(self.space.static_body, line[j] + (x, y), line[j + 1] + (x, y), 1)
                     shape.friction = 0.5
-                    shape.color = (255, 0, 0, 0)
+                    shape.color = (255, 255, 255, 255)
                     self.space.add(shape)
-            #create_square(space, x/2, y/2)
 
+class reverse_gravity:
+    def __init__(self, space):
+        self.space = space
 
-def gravity_change(space):
-    common_walls(space)
+    def run(self):
+        common_walls(self.space)
+        self.space.gravity = (0, -200)
 
-    space.gravity = (0, -200)
 
 def while_rooms_events(screen, room):
-    """Вызывается в while loop в battle_zone"""
+    """Вызывается в while loop в battle_zone. Для каждой комнаты отображает нужную картинку"""
 
     if type(room) is random_circle_room:
-        img = pygame.image.load('мяч.png').convert_alpha()
-        img = pygame.transform.scale(img, (50, 50))
+        img = pygame.transform.scale(room.img, (room.width, room.height))
         for i in range(room.amount-1):
             (img_x, img_y) = room.coord[i]
             screen.blit(img, (img_x, img_y))
+    elif type(room) is three_levels:
+        img = pygame.transform.scale(room.img, (room.width, room.height))
+        screen.blit(img, (room.pos_x, H / 4))
+        screen.blit(img, (room.pos_x, H / 2))
+        screen.blit(img, (room.pos_x, 3*H / 4))
+
 
 def create_room(space, number_of_room):
     """Открывает нужную комнату"""
     if number_of_room == 0:
-        common_walls(space)
+        return typical_walls(space)
+
     if number_of_room == 1:
-        four_extra_walls(space)
+        return four_extra_walls(space)
+
     if number_of_room == 2:
-        three_levels(space)
-    if number_of_room == 3:
         return random_circle_room(space)
-        #random_circles(space)
+
+    if number_of_room == 3:
+        return three_levels(space)
+
     if number_of_room == 4:
-        gravity_change(space)
+        return reverse_gravity(space)
