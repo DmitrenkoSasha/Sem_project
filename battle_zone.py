@@ -17,7 +17,7 @@ def main_battle(number_of_room):
     scale = 1.2
     space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
     clock = pygame.time.Clock()
-    font = pygame.font.SysFont("Arial", 30)
+    font = pygame.font.SysFont("WeAreDIMDAM", 50)
     draw_options = pymunk.pygame_util.DrawOptions(screen)
     draw_options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     balls = []
@@ -30,6 +30,8 @@ def main_battle(number_of_room):
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
     sound2 = pygame.mixer.Sound('удар по груше.wav')
+    hart_img = pygame.image.load('hart.png')
+    hart_img = pygame.transform.scale(hart_img, (300, 90))
 
     collision_types = {
         "head_1": 1,
@@ -341,10 +343,10 @@ def main_battle(number_of_room):
     add_blood_handler('body_2', "left_feet_1")
 
     def make_text(points1, points2):
-        text_1 = font.render('Жизни: '+str(points1), True, 'red')
-        text_2 = font.render('Жизни: '+str(points2), True, 'green2')
-        screen.blit(text_1, (20, 20))
-        screen.blit(text_2, (800, 20))
+        text_1 = font.render(str(points1), True, 'red')
+        text_2 = font.render(str(points2), True, 'green2')
+        screen.blit(text_1, (160, 0))
+        screen.blit(text_2, (860, 0))
 
     def check_event_human_1():
         """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
@@ -387,8 +389,11 @@ def main_battle(number_of_room):
         screen.fill(white)
         screen.blit(bg, (0, 0))
         while_rooms_events(screen, room)
+
         space.step(1 / 40)  # Независимый цикл пересчитывающий физику
         space.debug_draw(draw_options)
+        screen.blit(hart_img, (0, -25))
+        screen.blit(hart_img, (700, -25))
         make_text(points_1, points_2)
 
         pygame.display.update()  # Обновляет весь экран, если не передать аргумент
