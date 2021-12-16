@@ -15,7 +15,25 @@ def main_battle(number_of_room):
     pygame.init()
 
     screen = pygame.display.set_mode((W, H))
-    bg = pygame.image.load(r'background.png')
+
+    bg1 = pygame.image.load(r'background.png')
+    bg2 = pygame.image.load(r'задний план\фон2.jpg')
+    bg4 = pygame.image.load(r'задний план\фон3.png')
+    bg5 = pygame.image.load(r'задний план\фон4.jpg')
+    bg6 = pygame.image.load(r'задний план\фон5.jpg')
+    bg6 = pygame.image.load(r'задний план\фон6.jpg')
+    bg7 = pygame.image.load(r'задний план\фон7.png')
+    bg8 = pygame.image.load(r'задний план\фон8.png')
+    bg9 = pygame.image.load(r'задний план\фон9.jpg')
+    bg10 = pygame.image.load(r'задний план\фон10.jpg')
+    bg12 = pygame.image.load(r'задний план\фон12.jpg')
+    bg13 = pygame.image.load(r'задний план\фон13.jpg')
+    bg14 = pygame.image.load(r'задний план\фон14.jpg')
+
+    bgss = [bg1, bg2, bg4, bg5, bg6, bg7, bg8, bg9, bg10, bg12, bg13, bg14]
+    i = random.randint(0, 11)
+
+    bg = bgss[i]
     space = pymunk.Space()
     scale = 1.2
     space.gravity = (0, 100)  #
@@ -67,27 +85,30 @@ def main_battle(number_of_room):
             Returns:
                 collision: [bool] - Булеан, обозначающий, необходимо ли обрабатывать столкновение
         """
-        for c in arbiter.contact_point_set.points:
-            r = max(3, abs(c.distance * 5))
-            r = int(r)
+        part_1 = arbiter.shapes[0]
+        part_2 = arbiter.shapes[1]
+        if ((part_1 in human_1.shapes) and (part_2 in human_2.shapes)) or ((part_2 in human_1.shapes) and (part_1 in human_2.shapes)):
+            for c in arbiter.contact_point_set.points:
+                r = max(3, abs(c.distance * 5))
+                r = int(r)
 
-            p = pymunk.pygame_util.to_pygame(c.point_a, data["surface"])
-            pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)
-            for i in range(100):
-                create_blood(space, p, 2)
-            sound2.play()
+                p = pymunk.pygame_util.to_pygame(c.point_a, data["surface"])
+                pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)
+                for i in range(20):
+                    create_blood(space, p, 2)
+                sound2.play()
 
-            #  Draw stuff
-            balls_to_remove = []
-            for ball in balls:
-                if ball.body.position.y > 700:
-                    balls_to_remove.append(ball)
-                p = tuple(map(int, ball.body.position))
-                pygame.draw.circle(screen, pygame.Color("blue"), p, int(ball.radius), 2)
+                #  Draw stuff
+                balls_to_remove = []
+                for ball in balls:
+                    if ball.body.position.y > 700:
+                        balls_to_remove.append(ball)
+                    p = tuple(map(int, ball.body.position))
+                    pygame.draw.circle(screen, pygame.Color("blue"), p, int(ball.radius), 2)
 
-            for ball in balls_to_remove:
-                space.remove(ball, ball.body)
-                balls.remove(ball)
+                for ball in balls_to_remove:
+                    space.remove(ball, ball.body)
+                    balls.remove(ball)
         return True
 
     def count_points(arbiter, space, data):
@@ -103,43 +124,73 @@ def main_battle(number_of_room):
             if part_2 == human_2.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            if part_2 == human_2.shapes[1]:
-                human_1.points -= 1
-            for i in range(2, 6, 1):
-                if part_2 == human_2.shapes[i]:
-                    human_1.points -= 3
-            for i in range(6, 10, 1):
+            for i in range (2, 6, 1):
                 if part_2 == human_2.shapes[i]:
                     human_1.points -= 2
-
+            for i in range(6, 10, 1):
+                if part_2 == human_2.shapes[i]:
+                    human_1.points -= 3
+        elif part_2 == human_1.shapes[0]:
+            if part_1 == human_2.shapes[0]:
+                human_1.points -= 2
+                human_2.points -= 2
+            for i in range (2, 6, 1):
+                if part_1 == human_2.shapes[i]:
+                    human_1.points -= 2
+            for i in range(6, 10, 1):
+                if part_1 == human_2.shapes[i]:
+                    human_1.points -= 3  #head 1 blow
         elif part_1 == human_2.shapes[0]:
             if part_2 == human_1.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            if part_2 == human_1.shapes[1]:
-                human_2.points -= 1
-            for i in range(2, 6, 1):
+            for i in range (2, 6, 1):
+                if part_2 == human_1.shapes[i]:
+                    human_2.points -= 2
+            for i in range(6, 10, 1):
                 if part_2 == human_1.shapes[i]:
                     human_2.points -= 3
-            for i in range(6, 10, 1):
-                if part_2 == human_1.shapes[i]:
+        elif part_2 == human_2.shapes[0]:
+            if part_1 == human_1.shapes[0]:
+                human_1.points -= 2
+                human_2.points -= 2
+            for i in range (2, 6, 1):
+                if part_1 == human_1.shapes[i]:
                     human_2.points -= 2
-
-        elif part_1 == human_1.shapes[1]:
-            for i in range(2, 6, 1):
-                if part_2 == human_1.shapes[i]:
-                    human_1.points -= 2
             for i in range(6, 10, 1):
-                if part_2 == human_1.shapes[i]:
+                if part_1 == human_1.shapes[i]:
+                    human_2.points -= 3     #head 2 blow
+
+        if part_1 == human_1.shapes[1]:
+            for i in range (2, 6, 1):
+                if part_2 == human_2.shapes[i]:
                     human_1.points -= 1
+            for i in range(6, 10, 1):
+                if part_2 == human_2.shapes[i]:
+                    human_1.points -= 2
+        elif part_2 == human_1.shapes[1]:
+            for i in range (2, 6, 1):
+                if part_1 == human_2.shapes[i]:
+                    human_1.points -= 1
+            for i in range(6, 10, 1):
+                if part_1 == human_2.shapes[i]:
+                    human_1.points -= 2     #body 1 blow
 
         elif part_1 == human_2.shapes[1]:
-            for i in range(2, 6, 1):
-                if part_2 == human_2.shapes[i]:
-                    human_2.points -= 2
-            for i in range(6, 10, 1):
-                if part_2 == human_2.shapes[i]:
+            for i in range (2, 6, 1):
+                if part_2 == human_1.shapes[i]:
                     human_2.points -= 1
+            for i in range(6, 10, 1):
+                if part_2 == human_1.shapes[i]:
+                    human_2.points -= 2
+        elif part_2 == human_2.shapes[1]:
+            for i in range (2, 6, 1):
+                if part_1 == human_1.shapes[i]:
+                    human_2.points -= 1
+            for i in range(6, 10, 1):
+                if part_1 == human_1.shapes[i]:
+                    human_2.points -= 2    #body 1 blow
+
 
     def add_blood_handler(object_1, object_2):
         """ Добавляет обработчик столкновений между объектами с заданными типами collision_types
@@ -147,43 +198,30 @@ def main_battle(number_of_room):
                 object_1: [int] - первый объект (из collision_types)
                 object_2: [int] - второй объект (из collision_types)
         """
-        handler = space.add_collision_handler(collision_types[object_1], collision_types[object_2])
+        handler = space.add_collision_handler(object_1, object_2)
         handler.data["surface"] = screen
         handler.begin = draw_blood
         handler.separate = count_points
-        handlers.append(handler)
 
     human_1 = Human(space)
-    human_1.create_Human(300, H-100, 0)
+    human_1.create_Human(300, 450)
     for shape in human_1.shapes:
         shape.color = pygame.Color('red')
-    for shape in human_1_shapes:
-        print(shape.collision_type)
     human_2 = Human(space)
-    human_2.create_Human(700, H-100, 10)
+    human_2.create_Human(700, 450)
     for shape in human_2.shapes:
         shape.color = pygame.Color('green2')
-    for shape in human_1_shapes:
+
+    for shape in human_2.shapes:
         print(shape.collision_type)
+        '''if shape.collision_type == 0:
+            shape.color = pygame.Color('white')'''
 
-
-    add_blood_handler(0, 13)
-    add_blood_handler(0, 15)
-    add_blood_handler(0, 17)
-    add_blood_handler(0, 19)
-    add_blood_handler(1, 13)
-    add_blood_handler(1, 15)
-    add_blood_handler(1, 17)
-    add_blood_handler(1, 19)
-
-    add_blood_handler(10, 3)
-    add_blood_handler(10, 5)
-    add_blood_handler(10, 7)
-    add_blood_handler(10, 9)
-    add_blood_handler(11, 3)
-    add_blood_handler(11, 5)
-    add_blood_handler(11, 7)
-    add_blood_handler(11, 9)
+    room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
+    room.run()
+    add_blood_handler(0, 0)
+    add_blood_handler(0, 3)
+    add_blood_handler(1, 3)
 
     def make_text(points_1, points_2):
         """ Выводит на экран текст с количеством жизней у людей
