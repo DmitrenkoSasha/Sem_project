@@ -1,19 +1,24 @@
 # coding: utf-8
 # license: GPLv3
+from battle_zone import *
+from gym import *
 
 from functools import partial
 from tkinter import *
-
+import tkinter.font as font
+import pygame.font
 from PIL import ImageTk, Image
 
-from battle_zone import *
-from gym import *
+
 
 
 class Menu:
     def __init__(self):
         self.window = Tk()
-        self.background = r'background.png'
+        self.background = r'menu_bg.png'
+        self.color = 'lightgreen'
+        self.font = font.Font(family='Helvetica', size=20)
+        self.images = []
 
     def random_bg(self):
         """Из множества собственных фонов случайным образом выбирает один
@@ -37,25 +42,40 @@ class Menu:
         self.window = Tk()
         self.show_menu()
 
+    def add_image(self, path, width, height):
+        img = Image.open(path)
+        imag = img.resize((width, height), Image.ANTIALIAS)
+        image = ImageTk.PhotoImage(imag)
+        self.images.append(image)
+
     def show_rooms(self):
         self.window.destroy()
         self.window = Tk()
         self.window.title("Stickmen ahead")
         self.window.geometry('1000x700')
-        img = Image.open(self.background)
         width = 1000
         height = 700
+        img = Image.open(self.background)
         imag = img.resize((width, height), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(imag)
+        width_1 = 280
+        height_1 = round(width_1*0.7)
+        self.images = []
+        self.add_image(r'room_1.jpg', width_1, height_1)
+        self.add_image(r'room_2.jpg', width_1, height_1)
+        self.add_image(r'room_3.jpg', width_1, height_1)
+        self.add_image(r'room_4.jpg', width_1, height_1)
+        self.add_image(r'room_5.jpg', width_1, height_1)
+
         panel = Label(self.window, image=image)
         panel.pack(side="top", fill="both", expand="no")
-
-        btn = Button(self.window, text="Обычная комната!", command=partial(self.clicked, 0)).place(x=250, y=120)
-        btn = Button(self.window, text="Восемь стен!", command=partial(self.clicked, 1)).place(x=250, y=150)
-        btn = Button(self.window, text="Случайные препятствия!", command=partial(self.clicked, 2)).place(x=250, y=180)
-        btn = Button(self.window, text="Три этажа!", command=partial(self.clicked, 3)).place(x=250, y=210)
-        btn = Button(self.window, text="Поломка гравитации!", command=partial(self.clicked, 4)).place(x=250, y=240)
-        btn = Button(self.window, text="В меню", command=partial(self.show_menu_2)).place(x=250, y=270)
+        l = Label(width=40, height=2, bg='lightgreen', text="Выберите комнату", font=self.font).place(x=290, y=0)
+        btn = Button(self.window, image=self.images[0], width=width_1, height=height_1, command=partial(self.clicked, 0)).place(x=80, y=40)
+        btn = Button(self.window, image=self.images[1], width=width_1, height=height_1, command=partial(self.clicked, 1)).place(x=80+(width_1+10)*1, y=40)
+        btn = Button(self.window, image=self.images[2], width=width_1, height=height_1, command=partial(self.clicked, 2)).place(x=80+(width_1+10)*2, y=40)
+        btn = Button(self.window, image=self.images[3], width=width_1, height=height_1, command=partial(self.clicked, 3)).place(x=80+(width_1+10)*1, y=40+height_1+10)
+        btn = Button(self.window, image=self.images[4], width=width_1, height=height_1, command=partial(self.clicked, 4)).place(x=80+(width_1+10)*1, y=40+height_1*2+20)
+        btn = Button(self.window, text="В меню", bg='lightgreen', font=self.font, width = 20, height = 1, command=partial(self.show_menu_2)).place(x=0, y=0)
         self.window.mainloop()
 
     def show_menu(self):
@@ -68,10 +88,11 @@ class Menu:
         image = ImageTk.PhotoImage(imag)
         panel = Label(self.window, image=image)
         panel.pack(side="top", fill="both", expand="no")
-        btn = Button(self.window, text="Тренажёрный зал!", command=self.clicked_gym).place(x=250, y=100)
-        btn = Button(self.window, text="Режим PvP!", command=self.clicked_rooms).place(x=250, y=200)
-        btn = Button(self.window, text="Управление!", command=self.clicked_manual).place(x=250, y=300)
-        btn = Button(self.window, text="Выход!", command=quit).place(x=250, y=400)
+        l = Label(width=20, height=3, bg='#f5fb53', text="Stickman ahead", font=font.Font(family='Helvetica', size=40)).place(x=200, y=0)
+        btn = Button(self.window, text="Тренажёрный зал", width = 20, height = 2, bg=self.color, font=self.font, command=self.clicked_gym).place(x=340, y=200)
+        btn = Button(self.window, text="Режим PvP", width = 20, height = 2, bg=self.color, font=self.font, command=self.clicked_rooms).place(x=340, y=300)
+        btn = Button(self.window, text="Управление", width = 20, height = 2, bg=self.color, font=self.font, command=self.clicked_manual).place(x=340, y=400)
+        btn = Button(self.window, text="Выход", width = 20, height = 2, bg=self.color, font=self.font, command=self.window.quit).place(x=340, y=500)
         self.window.mainloop()
 
     def show_manual(self):
@@ -87,9 +108,14 @@ class Menu:
         panel = Label(self.window, image=image)
         panel.pack(side="top", fill="both", expand="no")
 
-        lbl = Label(self.window, text="Игрок 1 - стрелки на клавиатуре").place(x=250, y=120)
-        lbl = Label(self.window, text="Игрок 2 - кнопки WASD").place(x=250, y=140)
-        btn = Button(self.window, text="В меню", command=partial(self.show_menu_2)).place(x=250, y=160)
+        lbl = Label(self.window, bg='#f5fb53', font=self.font, text="Ваша задача - уничтожить палочного противника раньше, чем он уничтожит вас").place(x=100, y=90)
+        lbl = Label(self.window, bg='#f5fb53', font=self.font,
+                    text="Жизни снимаются при попадании в голову и тело").place(x=100, y=120)
+        lbl = Label(self.window, bg='#f5fb53', font=self.font,
+                    text="Удачи!").place(x=100, y=150)
+        lbl = Label(self.window, bg='#f5fb53', font=self.font, text="Игрок 1 - стрелки на клавиатуре").place(x=20, y=250)
+        lbl = Label(self.window, bg='#f5fb53', font=self.font, text="Игрок 2 - кнопки WASD").place(x=700, y=250)
+        btn = Button(self.window, font=self.font, text="В меню", command=self.show_menu_2).place(x=0, y=0)
         self.window.mainloop()
 
 if __name__ == "__main__":
