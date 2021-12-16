@@ -1,13 +1,4 @@
-import pygame
-from pymunk.pygame_util import *
-from typing import List
-import random
-import pymunk
 import pymunk.pygame_util
-from pymunk.vec2d import Vec2d
-from pygame.locals import *
-from pymunk.vec2d import Vec2d
-
 from textures import *
 from human import *
 
@@ -108,8 +99,6 @@ def main_battle(number_of_room):
         """
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
-        #print(part_1)
-        #print(part_2)
         if part_1 == human_1.shapes[0]:
             if part_2 == human_2.shapes[0]:
                 human_1.points -= 2
@@ -165,19 +154,18 @@ def main_battle(number_of_room):
         handlers.append(handler)
 
     human_1 = Human(space)
-    human_1.create_Human(300, 450, 0)
+    human_1.create_Human(300, H-100, 0)
     for shape in human_1.shapes:
         shape.color = pygame.Color('red')
     for shape in human_1_shapes:
         print(shape.collision_type)
     human_2 = Human(space)
-    human_2.create_Human(700, 450, 10)
+    human_2.create_Human(700, H-100, 10)
     for shape in human_2.shapes:
         shape.color = pygame.Color('green2')
     for shape in human_1_shapes:
         print(shape.collision_type)
-    room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
-    room.run()
+
 
     add_blood_handler(0, 13)
     add_blood_handler(0, 15)
@@ -205,8 +193,11 @@ def main_battle(number_of_room):
         """
         text_1 = font.render(str(points_1), True, 'red')
         text_2 = font.render(str(points_2), True, 'green2')
-        screen.blit(text_1, (160, 5))
-        screen.blit(text_2, (860, 5))
+        screen.blit(text_1, (160, 0))
+        screen.blit(text_2, (860, 0))
+
+    room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
+    timer, amount = room.run()
 
     while alive:
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
@@ -216,12 +207,43 @@ def main_battle(number_of_room):
                 alive = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
+
+            elif event.type == room.event and type(room) is TypicalWalls:
+                if amount <= 0:
+                    pygame.time.set_timer(room.event, 0)
+
+                amount -= 1
+                mass = 3
+                radius = 8
+                moment = pymunk.moment_for_circle(mass, 0, radius)
+                b = pymunk.Body(mass, moment)
+                c = pymunk.Circle(b, radius)
+                c.friction = 1
+                b.position = random.randint(100, 400), 0
+
+                space.add(b, c)
+            elif event.type == room.event and type(room) is ReverseGravity:
+                if amount <= 0:
+                    pygame.time.set_timer(room.event, 0)
+
+                amount -= 1
+                mass = 3
+                radius = 8
+                moment = pymunk.moment_for_circle(mass, 0, radius)
+                b = pymunk.Body(mass, moment)
+                c = pymunk.Circle(b, radius)
+                c.friction = 1
+                b.position = random.randint(50, W-50), H-50
+
+                space.add(b, c)
+
         screen.fill(white)
         screen.blit(bg, (0, 0))
+        space.debug_draw(draw_options)
         while_rooms_events(screen, room)
 
         space.step(1 / 40)  # Независимый цикл пересчитывающий физику
-        space.debug_draw(draw_options)
+
         screen.blit(hart_img, (0, -25))
         screen.blit(hart_img, (700, -25))
         make_text(human_1.points, human_2.points)
