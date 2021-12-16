@@ -14,7 +14,6 @@ font = pygame.font.SysFont("Arial", 16)
 options = pymunk.pygame_util.DrawOptions(screen)
 options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
 collision_types = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
-
 ''' "head_1": 0,
     "body_1": 1,
     "right_arm_1": 2,
@@ -38,15 +37,34 @@ collision_types = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
     "left_feet_2": 19'''
 
 class Human:
+    '''Класс, отвечающий за создание палочных людей. Таковые создаются в модулях gym и battle_zone'''
     def __init__(self, space):
+        """ Конструктор класса Human
+
+            Params:
+                space [pymunk.Space] - область создания
+        """
         self.space = space
         self.shapes = []
         self.points = 0
 
-    def add_lever(self, pos, x1, x2, category, mask, collision_type):
+    def add_lever(self, pos, x1, x2, width, category, mask, collision_type):
+        """ Создаёт элемент человека
+
+            Params:
+                pos: [float, float] - позиция человека
+                x1: [float, float] - координаты первого края палки центра человека
+                x2: [float, float] - координаты второго края палки относительно центра человека
+                width: [float] - толщина палки
+                category: [int] - категория объекта, число в формате 2^n
+                mask: [int] - маска объекта, сумма чисел в формате 2^n, отвечает за столкновения
+                collision_type: [int] - тип столкновений для этого объекта из collision_types
+            Return:
+                body: [pymunk.body] - присваивает переменной вид физического тела
+        """
         body = pymunk.Body()
         body.position = pos
-        shape = pymunk.Segment(body, x1, x2, 6*scale)
+        shape = pymunk.Segment(body, x1, x2, width*scale)
         shape.mass = 1
         shape.friction = 50
         shape.color = pygame.Color('blue')
@@ -56,32 +74,26 @@ class Human:
         self.space.add(body, shape)
         return body
 
-    def add_head(self, pos, x1, x2, category, mask, collision_type):
-        body = pymunk.Body()
-        body.position = pos
-        shape = pymunk.Segment(body, x1, x2, 18*scale)
-        shape.mass = 1
-        shape.friction = 50
-        shape.color = pygame.Color('blue')
-        shape.filter = pymunk.ShapeFilter(categories=category, mask=mask)
-        shape.collision_type = collision_types[collision_type]
-        self.shapes.append(shape)
-        self.space.add(body, shape)
-        return body
 
     def create_Human(self, x, y, i):
-        head = self.add_head((x, y), (0, -30 * scale), (0, -32 * scale), 1, 1021, i)
-        telo = self.add_lever((x, y), (0, 30 * scale), (0, -30 * scale), 2, 682, i+1)
+        """ Создаёт человека поэлементно, с добавлением суставов и пружин
+            Args:
+                x: [float] - x-координата человека
+                y: [float] - y-координата человека
+                i: [int] - параметр, отвечающий за определение типов столкновения collision_types
+        """
+        head = self.add_lever((x, y), (0, -30 * scale), (0, -32 * scale), 18, 1, 1021, i)
+        telo = self.add_lever((x, y), (0, 30 * scale), (0, -30 * scale), 6, 2, 682, i+1)
         c_head_body = pymunk.PivotJoint(head, telo, (x, y - 30 * scale))
         self.space.add(c_head_body)
 
-        right_leg = self.add_lever((x, y), (0, 30 * scale), (20 * scale, 50 * scale), 256, 477, i+6)
-        right_feet = self.add_lever((x, y), (20 * scale, 50 * scale), (20 * scale, 80 * scale), 512, 767, i+7)
+        right_leg = self.add_lever((x, y), (0, 30 * scale), (20 * scale, 50 * scale), 6, 256, 477, i+6)
+        right_feet = self.add_lever((x, y), (20 * scale, 50 * scale), (20 * scale, 80 * scale), 6, 512, 767, i+7)
         c_right_leg = pymunk.PivotJoint(right_leg, right_feet, (x + 20 * scale, y + 50 * scale))
         self.space.add(c_right_leg)
 
-        left_leg = self.add_lever((x, y), (0, 30 * scale), (-20 * scale, 50 * scale), 64, 637, i+8)
-        left_feet = self.add_lever((x, y), (-20 * scale, 50 * scale), (-20 * scale, 80 * scale), 128, 959, i+9)
+        left_leg = self.add_lever((x, y), (0, 30 * scale), (-20 * scale, 50 * scale), 6, 64, 637, i+8)
+        left_feet = self.add_lever((x, y), (-20 * scale, 50 * scale), (-20 * scale, 80 * scale), 6, 128, 959, i+9)
         c_left_leg = pymunk.PivotJoint(left_leg, left_feet, (x - 20 * scale, y + 50 * scale))
         self.space.add(c_left_leg)
 
@@ -102,13 +114,13 @@ class Human:
         self.space.add(spring_body_right_leg)
         self.space.add(spring_body_left_leg)
 
-        right_arm = self.add_lever((x, y), (0, -5 * scale), (15 * scale, -20 * scale), 16, 985, i+2)
-        right_hand = self.add_lever((x, y), (15 * scale, -20 * scale), (40 * scale, -45 * scale), 32, 991, i+3)
+        right_arm = self.add_lever((x, y), (0, -5 * scale), (15 * scale, -20 * scale), 6, 16, 985, i+2)
+        right_hand = self.add_lever((x, y), (15 * scale, -20 * scale), (40 * scale, -45 * scale), 6, 32, 991, i+3)
         c_right_arm = pymunk.PivotJoint(right_arm, right_hand, (x + 15 * scale, y - 20 * scale))
         self.space.add(c_right_arm)
 
-        left_arm = self.add_lever((x, y), (0, -5 * scale), (-15 * scale, -20 * scale), 4, 997, i+4)
-        left_hand = self.add_lever((x, y), (-15 * scale, -20 * scale), (-40 * scale, -45 * scale), 8, 1019, i+5)
+        left_arm = self.add_lever((x, y), (0, -5 * scale), (-15 * scale, -20 * scale), 6, 4, 997, i+4)
+        left_hand = self.add_lever((x, y), (-15 * scale, -20 * scale), (-40 * scale, -45 * scale), 6, 8, 1019, i+5)
         c_left_arm = pymunk.PivotJoint(left_arm, left_hand, (x - 15 * scale, y - 20 * scale))
         self.space.add(c_left_arm)
 
@@ -128,7 +140,13 @@ class Human:
         self.points = 100
 
     def check_event_human(self, up, left, down, right):
-        """Эта функция должна вызываться в главном цикле модуля тренажёрный зал или главного модуля"""
+        """ Отвечает за перемещение человека с помощью кнопок
+            Params:
+                up: [int] - кнопка для движения вверх
+                left: [int] - кнопка для движения влево
+                down: [int] - кнопка для движения вниз
+                right: [int] - кнопка для движения вправо
+        """
         if pygame.key.get_pressed()[right]:
             for part in self.complect:
                 part.velocity += (30, 0)
