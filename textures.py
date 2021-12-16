@@ -13,10 +13,11 @@ H = 700
 
 def LinesAroundImg(filename, width, height):
     """Приближает рисунок кривой
-    filename: название картинки, которую нужно окружить ломанной
-    width: необходимая ширина изображения, каким оно будет видно на экране
-    height: необходимая высота изображения
-    return: pymunk.autogeometry.PolylineSet object - массив координат
+        Params:
+            filename: [str] - название картинки, которую нужно окружить ломанной
+            width: [float] - необходимая ширина изображения, каким оно будет видно на экране
+            height: [float] - необходимая высота изображения
+            return: [pymunk.autogeometry.PolylineSet] - массив координат
     """
     logo_img = pygame.image.load(filename).convert_alpha()
     logo_img = pygame.transform.scale(logo_img, (width, height))
@@ -39,6 +40,12 @@ def LinesAroundImg(filename, width, height):
 
 
 def CreateFloor(space, x, y):
+    ''' Создаёт статичный горизонтальный прямоугольник
+        Params:
+            space: [pymunk.Space] - область создания
+            x: [float] - x-координата центра прямоугольника
+            y: [float] - y-координата центра прямоугольника
+    '''
     floor_body = pymunk.Body(body_type=pymunk.Body.STATIC)
     floor_body.position = x, y
     floor_shape = pymunk.Poly.create_box(floor_body, (W * 0.7, 10))
@@ -59,7 +66,9 @@ def create_square(space, x, y):
 
 def CommonWalls(space):
     """Используется для прорисовки стен-границ всех комнат. Добавляет в space неподвижные прямоугольники - стены.
-    space: пространство pymunk, в которое будем добавлять объекты"""
+        Params:
+            space: [pymunk.Space] - пространство pymunk, в которое будем добавлять объекты
+    """
     floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 30)
     space.add(floor_shape)
 
@@ -76,21 +85,32 @@ def CommonWalls(space):
 class TypicalWalls:
     """Обычная комната!"""
     def __init__(self, space):
+        """ Конструкторкомнаты
+
+            Params:
+                space: [pymunk.Space] - область создания
+        """
         self.space = space
 
     def run(self):
+        """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
         CommonWalls(self.space)
-        print(0)
 
 
 class FourExtraWalls:
     """Восемь стен!"""
     def __init__(self, space):
-        self.number = 1
+        """ Конструктор комнаты
+
+            Params:
+                space: [pymunk.Space] - область создания
+        """
+        self.number = 1 #порядковый номер комнаты
         self.space = space
         self.things = []
 
     def run(self):
+        """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
         CommonWalls(self.space)
 
         up_wall = pymunk.Segment(self.space.static_body, (W/2, 0), (W/2, H/7), 50)
@@ -118,7 +138,7 @@ class ThreeLevels:
         self.pos_x = W / 6
 
     def run(self):
-        """Функция, запускающаяся в battle_zone после создания комнаты"""
+        """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
         CommonWalls(self.space)
         line_set = LinesAroundImg('платформа.png', self.width, self.height)
 
@@ -136,6 +156,11 @@ class ThreeLevels:
 
 class RandomCircleRoom:
     def __init__(self, space):
+        """ Конструктор комнаты
+
+            Params:
+                space: [pymunk.Space] - область создания
+        """
         self.space = space
         self.amount = 20
         self.balls_width = 40
@@ -144,7 +169,7 @@ class RandomCircleRoom:
         self.img = pygame.image.load('мяч.png').convert_alpha()
 
     def run(self):
-        """Функция, запускающаяся в battle_zone после создания комнаты"""
+        """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
         CommonWalls(self.space)
 
         line_set = LinesAroundImg('мяч.png', self.balls_width, self.balls_height)
@@ -168,12 +193,17 @@ class RandomCircleRoom:
 
 
 class ReverseGravity:
-    """Поломка гравитации!"""
+    """Комната со сломанной гравитацией"""
     def __init__(self, space):
+        """ Конструктор комнаты
+
+            Params:
+                space: [pymunk.Space] - область создания
+        """
         self.space = space
 
     def run(self):
-        """Функция, запускающаяся в battle_zone после создания комнаты"""
+        """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
         CommonWalls(self.space)
         self.space.gravity = (0, -200)
 
@@ -199,7 +229,10 @@ def while_rooms_events(screen, room):
 
 
 def create_room(space, number_of_room):
-    """Открывает нужную комнату
+    """ Открывает нужную комнату
+        Params:
+            space: [pymunk.Space] - область создания
+            number_of_room: [int] - порядковый номер комнаты
     return: представитель класса выбранной комнаты"""
     if number_of_room == 0:
         return TypicalWalls(space)

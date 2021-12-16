@@ -13,6 +13,11 @@ from human import *
 
 
 def main_battle(number_of_room):
+    """ Запускает модуль battle_zone
+
+        Params:
+            number_of_room [int] - номер вызываемой комнаты
+    """
     alive = True
     white = (255, 255, 255)
 
@@ -22,7 +27,7 @@ def main_battle(number_of_room):
     bg = pygame.image.load(r'background.png')
     space = pymunk.Space()
     scale = 1.2
-    space.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
+    space.gravity = (0, 100)  #
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("WeAreDIMDAM", 50)
     draw_options = pymunk.pygame_util.DrawOptions(screen)
@@ -42,6 +47,13 @@ def main_battle(number_of_room):
     hart_img = pygame.transform.scale(hart_img, (300, 90))
 
     def create_blood(space, center, radius):
+        """ Создаёт кровь в виде маленьких шариков
+
+                Params:
+                    space: [pymunk.Space] - область создания
+                    center: [float, float] - место удара
+                    radius: [float] - размер шариков
+        """
         body = pymunk.Body(1000, 1000)
         body.position = center
         shape = pymunk.Circle(body, radius)
@@ -55,7 +67,15 @@ def main_battle(number_of_room):
         return shape
 
     def draw_blood(arbiter, space, data):
+        """ Отрисовывает кровь при столкновении
 
+            Params:
+                arbiter: [dict] - словарь для сталкивающихся тел
+                space: [pymunk.Space] - область создания
+                data: [dict] - данные о столкновении, генерируются автоматически
+            Returns:
+                collision: [bool] - Булеан, обозначающий, необходимо ли обрабатывать столкновение
+        """
         for c in arbiter.contact_point_set.points:
             r = max(3, abs(c.distance * 5))
             r = int(r)
@@ -79,10 +99,12 @@ def main_battle(number_of_room):
                 balls.remove(ball)
         return True
 
-    def count_points(arbiter,  space, data):
-        """ Считает очки за столкновения человечков
-        space: параметр необходимый collision handler
-        data:  параметр необходимый collision handler
+    def count_points(arbiter, space, data):
+        """ Подсчитывает очки после обработки столкновения
+            Params:
+                arbiter: [dict] - словарь для сталкивающихся тел
+                space: [pymunk.Space] - область создания
+                data: [dict] - данные о столкновении, генерируются автоматически
         """
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
@@ -131,6 +153,11 @@ def main_battle(number_of_room):
                     human_2.points -= 1
 
     def add_blood_handler(object_1, object_2):
+        """ Добавляет обработчик столкновений между объектами с заданными типами collision_types
+            Params:
+                object_1: [int] - первый объект (из collision_types)
+                object_2: [int] - второй объект (из collision_types)
+        """
         handler = space.add_collision_handler(collision_types[object_1], collision_types[object_2])
         handler.data["surface"] = screen
         handler.begin = draw_blood
@@ -170,9 +197,14 @@ def main_battle(number_of_room):
     add_blood_handler(11, 7)
     add_blood_handler(11, 9)
 
-    def make_text(points1, points2):
-        text_1 = font.render(str(points1), True, 'red')
-        text_2 = font.render(str(points2), True, 'green2')
+    def make_text(points_1, points_2):
+        """ Выводит на экран текст с количеством жизней у людей
+            Params:
+                points_1: [int] - жизни первого человека
+                points_2: [int] - жизни второго человека
+        """
+        text_1 = font.render(str(points_1), True, 'red')
+        text_2 = font.render(str(points_2), True, 'green2')
         screen.blit(text_1, (160, 5))
         screen.blit(text_2, (860, 5))
 

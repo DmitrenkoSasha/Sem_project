@@ -42,7 +42,7 @@ class Human:
         """ Конструктор класса Human
 
             Params:
-                space [pymunk.Space] - область создания
+                space: [pymunk.Space] - область создания
         """
         self.space = space
         self.shapes = []
@@ -73,7 +73,6 @@ class Human:
         self.shapes.append(shape)
         self.space.add(body, shape)
         return body
-
 
     def create_Human(self, x, y, i):
         """ Создаёт человека поэлементно, с добавлением суставов и пружин
