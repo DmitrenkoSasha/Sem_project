@@ -223,13 +223,13 @@ def main_battle(number_of_room):
                 points_1: [int] - жизни первого человека
                 points_2: [int] - жизни второго человека
         """
-        text_1 = font.render(str(points_1), True, 'red')
-        text_2 = font.render(str(points_2), True, 'green2')
+        text_1 = font.render(str(points_1), True, (255, 0, 0))
+        text_2 = font.render(str(points_2), True, (0, 255, 0))
         screen.blit(text_1, (160, 0))
         screen.blit(text_2, (860, 0))
 
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
-    room.run()
+
     timer, amount = room.run()
 
     while alive:
