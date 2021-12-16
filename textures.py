@@ -5,11 +5,13 @@ import pymunk
 import pymunk.autogeometry
 import pymunk.pygame_util
 
+from equipment import Pear, Ball
+
 W = 1000
 H = 700
 
 
-def lines_around_img(filename, width, height):
+def LinesAroundImg(filename, width, height):
     """Приближает рисунок кривой
     filename: название картинки, которую нужно окружить ломанной
     width: необходимая ширина изображения, каким оно будет видно на экране
@@ -21,7 +23,7 @@ def lines_around_img(filename, width, height):
     logo_bb = pymunk.BB(0, 0, logo_img.get_width(), logo_img.get_height())
     logo_img.lock()
 
-    def sample_func(point):
+    def SampleFunc(point):
         """Необходима для march_soft
         return: целое число, отвечающее, как близко расположена ломанная к картинке, отриц. знач. не имеют смысла"""
         try:
@@ -31,12 +33,12 @@ def lines_around_img(filename, width, height):
         except:
             return 0
 
-    line_set = pymunk.autogeometry.march_soft(logo_bb, logo_img.get_width(), logo_img.get_height(), 99, sample_func)
+    line_set = pymunk.autogeometry.march_soft(logo_bb, logo_img.get_width(), logo_img.get_height(), 99, SampleFunc)
     logo_img.unlock()
     return line_set
 
 
-def create_floor(space, x, y):
+def CreateFloor(space, x, y):
     floor_body = pymunk.Body(body_type=pymunk.Body.STATIC)
     floor_body.position = x, y
     floor_shape = pymunk.Poly.create_box(floor_body, (W * 0.7, 10))
@@ -55,46 +57,58 @@ def create_square(space, x, y):
     space.add(square_body, square_shape)
 
 
-def common_walls(space):
-    floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 50)
+def CommonWalls(space):
+    """Используется для прорисовки стен-границ всех комнат. Добавляет в space неподвижные прямоугольники - стены.
+    space: пространство pymunk, в которое будем добавлять объекты"""
+    floor_shape = pymunk.Segment(space.static_body, (0, H), (W, H), 30)
     space.add(floor_shape)
 
-    left_wall_shape = pymunk.Segment(space.static_body, (0, 0), (0, H), 50)
+    left_wall_shape = pymunk.Segment(space.static_body, (0, 0), (0, H), 30)
     space.add(left_wall_shape)
 
-    right_wall_shape = pymunk.Segment(space.static_body, (W, 0), (W, H), 50)
+    right_wall_shape = pymunk.Segment(space.static_body, (W, 0), (W, H), 30)
     space.add(right_wall_shape)
 
-    roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 50)
+    roof_shape = pymunk.Segment(space.static_body, (0, 0), (W, 0), 30)
     space.add(roof_shape)
 
 
-class typical_walls:
+class TypicalWalls:
+    """Обычная комната!"""
     def __init__(self, space):
         self.space = space
 
     def run(self):
-        common_walls(self.space)
+        CommonWalls(self.space)
+        print(0)
 
 
-
-class four_extra_walls:
+class FourExtraWalls:
+    """Восемь стен!"""
     def __init__(self, space):
+        self.number = 1
         self.space = space
+        self.things = []
 
     def run(self):
-        common_walls(self.space)
+        CommonWalls(self.space)
 
-        up_wall = pymunk.Segment(self.space.static_body, (W/2, 0), (W/2, H*2/7), 50)
+        up_wall = pymunk.Segment(self.space.static_body, (W/2, 0), (W/2, H/7), 50)
         self.space.add(up_wall)
-        down_wall = pymunk.Segment(self.space.static_body, (W/2, H*5/7), (W/2, H), 50)
+        down_wall = pymunk.Segment(self.space.static_body, (W/2, H*6/7), (W/2, H), 50)
         self.space.add(down_wall)
         right_wall = pymunk.Segment(self.space.static_body, (0, H/2), (W*0.3, H/2), 50)
         self.space.add(right_wall)
         left_wall = pymunk.Segment(self.space.static_body, (W * 0.7, H / 2), (W, H / 2), 50)
         self.space.add(left_wall)
 
-class three_levels:
+        p1 = Pear(self.space, W // 2, H // 2, 'груша.png', self.number, 0.5)
+
+        self.things.append(p1)
+
+
+class ThreeLevels:
+    """Три этажа!"""
     def __init__(self, space):
         """pos_x: расстояние от левой стены до левого края платформы"""
         self.space = space
@@ -103,37 +117,37 @@ class three_levels:
         self.height = 50
         self.pos_x = W / 6
 
-
     def run(self):
         """Функция, запускающаяся в battle_zone после создания комнаты"""
-        common_walls(self.space)
-        line_set = lines_around_img('платформа.png', self.width, self.height)
+        CommonWalls(self.space)
+        line_set = LinesAroundImg('платформа.png', self.width, self.height)
 
         for line in line_set:
-            for i in range(3):
+            for i in range(3):  # три платформы
                 for j in range(len(line) - 1):
                     shape = pymunk.Segment(self.space.static_body, line[j] +
-                                           (self.pos_x, H / 4 + H/4 * i), line[j + 1] + (self.pos_x, H / 4 + H/4 * i), 1)
+                                           (self.pos_x, H / 4 + H / 4 * i),
+                                           line[j + 1] + (self.pos_x, H / 4 + H / 4 * i), 1)
                     shape.friction = 0.5
                     shape.elasticity = 10.0
                     shape.color = (255, 255, 255, 255)
                     self.space.add(shape)
 
 
-class random_circle_room:
+class RandomCircleRoom:
     def __init__(self, space):
         self.space = space
         self.amount = 20
-        self.width = 40
-        self.height = 40
+        self.balls_width = 40
+        self.balls_height = 40
         self.coord = []  # Список с координатами шариков, который используется while_rooms_events
         self.img = pygame.image.load('мяч.png').convert_alpha()
 
     def run(self):
         """Функция, запускающаяся в battle_zone после создания комнаты"""
-        common_walls(self.space)
+        CommonWalls(self.space)
 
-        line_set = lines_around_img('мяч.png', self.width, self.height)
+        line_set = LinesAroundImg('мяч.png', self.balls_width, self.balls_height)
 
         #  Каждый круг описываем ломанной
         for i in range(1, self.amount, 1):
@@ -152,43 +166,52 @@ class random_circle_room:
                     shape.color = (255, 255, 255, 255)
                     self.space.add(shape)
 
-class reverse_gravity:
+
+class ReverseGravity:
+    """Поломка гравитации!"""
     def __init__(self, space):
         self.space = space
 
     def run(self):
-        common_walls(self.space)
+        """Функция, запускающаяся в battle_zone после создания комнаты"""
+        CommonWalls(self.space)
         self.space.gravity = (0, -200)
 
 
 def while_rooms_events(screen, room):
     """Вызывается в while loop в battle_zone. Для каждой комнаты отображает нужную картинку"""
 
-    if type(room) is random_circle_room:
-        img = pygame.transform.scale(room.img, (room.width, room.height))
+    if type(room) is RandomCircleRoom:
+        img = pygame.transform.scale(room.img, (room.balls_width, room.balls_height))
         for i in range(room.amount-1):
             (img_x, img_y) = room.coord[i]
             screen.blit(img, (img_x, img_y))
-    elif type(room) is three_levels:
+    elif type(room) is ThreeLevels:
         img = pygame.transform.scale(room.img, (room.width, room.height))
         screen.blit(img, (room.pos_x, H / 4))
         screen.blit(img, (room.pos_x, H / 2))
         screen.blit(img, (room.pos_x, 3*H / 4))
+    elif type(room) is FourExtraWalls:
+        for one in room.things:
+            if type(one) is Pear:
+                rotated_img, vec_to_c, ps = one.rotate()
+                screen.blit(rotated_img, (round(vec_to_c.x), round(vec_to_c.y)))
 
 
 def create_room(space, number_of_room):
-    """Открывает нужную комнату"""
+    """Открывает нужную комнату
+    return: представитель класса выбранной комнаты"""
     if number_of_room == 0:
-        return typical_walls(space)
+        return TypicalWalls(space)
 
     if number_of_room == 1:
-        return four_extra_walls(space)
+        return FourExtraWalls(space)
 
     if number_of_room == 2:
-        return random_circle_room(space)
+        return RandomCircleRoom(space)
 
     if number_of_room == 3:
-        return three_levels(space)
+        return ThreeLevels(space)
 
     if number_of_room == 4:
-        return reverse_gravity(space)
+        return ReverseGravity(space)

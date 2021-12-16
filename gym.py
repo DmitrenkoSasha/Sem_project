@@ -61,7 +61,7 @@ def main_gym():
         for i in range(len(line) - 1):
             shape = pymunk.Segment(space_gym.static_body, line[i] + (img_x, img_y), line[i + 1] + (img_x, img_y), 1)
             shape.friction = 0.5
-            shape.color = (255, 0, 0, 0)
+            shape.color = (255, 255, 255, 0)
             space_gym.add(shape)
 
     def show_img_things(equipment):
@@ -74,16 +74,16 @@ def main_gym():
                 #  pygame.draw.lines(screen_gym, pygame.Color("red"), False, ps, 1)
 
     def walls():
-        floor_shape = pymunk.Segment(space_gym.static_body, (0, H), (W, H), 50)
+        floor_shape = pymunk.Segment(space_gym.static_body, (0, H), (W, H), 30)
         space_gym.add(floor_shape)
 
-        left_wall_shape = pymunk.Segment(space_gym.static_body, (0, 0), (0, H), 50)
+        left_wall_shape = pymunk.Segment(space_gym.static_body, (0, 0), (0, H), 30)
         space_gym.add(left_wall_shape)
 
-        right_wall_shape = pymunk.Segment(space_gym.static_body, (W, 0), (W, H), 50)
+        right_wall_shape = pymunk.Segment(space_gym.static_body, (W, 0), (W, H), 30)
         space_gym.add(right_wall_shape)
 
-        roof_shape = pymunk.Segment(space_gym.static_body, (0, 0), (W, 0), 50)
+        roof_shape = pymunk.Segment(space_gym.static_body, (0, 0), (W, 0), 30)
         space_gym.add(roof_shape)
 
     humans = []
@@ -95,7 +95,7 @@ def main_gym():
     h1.create_Human(400, 100)
     walls()
 
-    p1 = Pear(space_gym, W // 3, H // 2, 'груша.png')
+    p1 = Pear(space_gym, 2 * W // 3, H // 2, 'груша.png', -1, 1)
     things.append(p1)
 
     mouse_joint = None
