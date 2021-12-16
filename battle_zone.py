@@ -1,6 +1,7 @@
 import pymunk.pygame_util
 from textures import *
 from human import *
+from pygame import *
 
 
 def main_battle(number_of_room):
@@ -204,21 +205,14 @@ def main_battle(number_of_room):
         handler.separate = count_points
 
     human_1 = Human(space)
-    human_1.create_Human(300, 450)
+    human_1.create_Human(150, 600, 1)
     for shape in human_1.shapes:
         shape.color = pygame.Color('red')
     human_2 = Human(space)
-    human_2.create_Human(700, 450)
+    human_2.create_Human(850, 600, 1)
     for shape in human_2.shapes:
         shape.color = pygame.Color('green2')
 
-    for shape in human_2.shapes:
-        print(shape.collision_type)
-        '''if shape.collision_type == 0:
-            shape.color = pygame.Color('white')'''
-
-    room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
-    room.run()
     add_blood_handler(0, 0)
     add_blood_handler(0, 3)
     add_blood_handler(1, 3)
@@ -235,6 +229,7 @@ def main_battle(number_of_room):
         screen.blit(text_2, (860, 0))
 
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
+    room.run()
     timer, amount = room.run()
 
     while alive:

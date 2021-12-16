@@ -10,8 +10,6 @@ from battle_zone import *
 from gym import *
 
 
-
-
 class Menu:
     def __init__(self):
         self.window = Tk()
@@ -36,6 +34,7 @@ class Menu:
 
     def show_menu_2(self):
         self.window.destroy()
+        self.window = Tk()
         self.show_menu()
 
     def show_rooms(self):
@@ -77,6 +76,7 @@ class Menu:
 
     def show_manual(self):
         self.window.destroy()
+        self.window = Tk()
         self.window.title("Stickmen ahead")
         self.window.geometry('1000x700')
         img = Image.open(self.background)

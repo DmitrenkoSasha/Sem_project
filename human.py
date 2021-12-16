@@ -1,18 +1,8 @@
 import pygame
 import pymunk
 import pymunk.pygame_util
-from pymunk.vec2d import Vec2d
-from pygame.locals import *
 
-pygame.init()
-screen = pygame.display.set_mode((1000, 600))
-space = pymunk.Space()
-space.gravity = (0, 50)
-clock = pygame.time.Clock()
-scale = 1
-font = pygame.font.SysFont("Arial", 16)
-options = pymunk.pygame_util.DrawOptions(screen)
-options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
+
 collision_types = (0, 1, 2, 3)
 ''' "head_1": 0,
     "body_1": 1,
@@ -47,6 +37,7 @@ class Human:
         self.space = space
         self.shapes = []
         self.points = 0
+        self.scale = 1
 
     def add_lever(self, pos, x1, x2, width, category, mask, collision_type):
         """ Создаёт элемент человека
@@ -64,7 +55,7 @@ class Human:
         """
         body = pymunk.Body()
         body.position = pos
-        shape = pymunk.Segment(body, x1, x2, width*scale)
+        shape = pymunk.Segment(body, x1, x2, width * self.scale)
         shape.mass = 1
         shape.friction = 50
         shape.color = pygame.Color('blue')
@@ -74,10 +65,10 @@ class Human:
         self.space.add(body, shape)
         return body
 
-    def create_Human(self, x, y):
+    def create_Human(self, x, y, scale = 1):
         """ Создаёт человека поэлементно, с добавлением суставов и пружин
             Args:
-                x: [float] - x-координата человека
+                x: [float] - x-координата человека  # TODO какая координата?
                 y: [float] - y-координата человека
                 i: [int] - параметр, отвечающий за определение типов столкновения collision_types
         """

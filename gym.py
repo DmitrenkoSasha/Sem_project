@@ -1,6 +1,6 @@
 from human import *
 import pymunk.autogeometry
-
+from pymunk.vec2d import Vec2d
 from pymunk.pygame_util import *
 import pymunk.pygame_util
 import random
@@ -25,7 +25,6 @@ def main_gym():
     space_gym.gravity = (0, 900)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
     space_gym.sleep_time_threshold = 0.3
     clock_gym = pygame.time.Clock()
-    font_gym = pygame.font.SysFont("Arial", 16)
     options_gym = pymunk.pygame_util.DrawOptions(screen_gym)
     options_gym.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     pymunk.pygame_util.positive_y_is_up = False
@@ -59,7 +58,7 @@ def main_gym():
         line = pymunk.autogeometry.simplify_curves(line, 0.7)
 
         for i in range(len(line) - 1):
-            shape = pymunk.Segment(space_gym.static_body, line[i] + (img_x, img_y), line[i + 1] + (img_x, img_y), 1)
+            shape = pymunk.Segment(space_gym.static_body, line[i] + (img_x, img_y), line[i + 1] + (img_x, img_y), 2)
             shape.friction = 0.5
             shape.color = (255, 255, 255, 0)
             space_gym.add(shape)
@@ -92,7 +91,7 @@ def main_gym():
 
     h1 = Human(space_gym)
     humans.append(h1)
-    h1.create_Human(400, 100)
+    h1.create_Human(400, 100, 1)
     walls()
 
     p1 = Pear(space_gym, 2 * W // 3, H // 2, 'груша.png', -1, 1)
@@ -197,3 +196,6 @@ def main_gym():
         total_time += dt / 1000
 
     pygame.quit()
+
+if __name__ == "__main__":
+    print("This module is not for a straight call!")
