@@ -6,7 +6,6 @@ from gym import *
 from functools import partial
 from tkinter import *
 import tkinter.font as font
-import pygame.font
 from PIL import ImageTk, Image
 
 
@@ -37,11 +36,6 @@ class Menu:
     def clicked(self, number_of_room):
         main_battle(number_of_room)
 
-    def show_menu_2(self):
-        self.window.destroy()
-        self.window = Tk()
-        self.show_menu()
-
     def add_image(self, path, width, height):
         img = Image.open(path)
         imag = img.resize((width, height), Image.ANTIALIAS)
@@ -68,17 +62,19 @@ class Menu:
         self.add_image(r'room_5.jpg', width_1, height_1)
 
         panel = Label(self.window, image=image)
-        panel.pack(side="top", fill="both", expand="no")
+        panel.pack(side="top", fill="both", expand=0)
         l = Label(width=40, height=2, bg='lightgreen', text="Выберите комнату", font=self.font).place(x=290, y=0)
         btn = Button(self.window, image=self.images[0], width=width_1, height=height_1, command=partial(self.clicked, 0)).place(x=80, y=40)
         btn = Button(self.window, image=self.images[1], width=width_1, height=height_1, command=partial(self.clicked, 1)).place(x=80+(width_1+10)*1, y=40)
         btn = Button(self.window, image=self.images[2], width=width_1, height=height_1, command=partial(self.clicked, 2)).place(x=80+(width_1+10)*2, y=40)
         btn = Button(self.window, image=self.images[3], width=width_1, height=height_1, command=partial(self.clicked, 3)).place(x=80+(width_1+10)*1, y=40+height_1+10)
         btn = Button(self.window, image=self.images[4], width=width_1, height=height_1, command=partial(self.clicked, 4)).place(x=80+(width_1+10)*1, y=40+height_1*2+20)
-        btn = Button(self.window, text="В меню", bg='lightgreen', font=self.font, width = 20, height = 1, command=partial(self.show_menu_2)).place(x=0, y=0)
+        btn = Button(self.window, text="В меню", bg='lightgreen', font=self.font, width = 20, height = 1, command=partial(self.show_menu)).place(x=0, y=0)
         self.window.mainloop()
 
     def show_menu(self):
+        self.window.destroy()
+        self.window = Tk()
         self.window.title("Stickmen ahead")
         self.window.geometry('1000x700')
         img = Image.open(self.background)
@@ -87,12 +83,12 @@ class Menu:
         imag = img.resize((width, height), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(imag)
         panel = Label(self.window, image=image)
-        panel.pack(side="top", fill="both", expand="no")
+        panel.pack(side="top", fill="both", expand=0)
         l = Label(width=20, height=3, bg='#f5fb53', text="Stickman ahead", font=font.Font(family='Helvetica', size=40)).place(x=200, y=0)
-        btn = Button(self.window, text="Тренажёрный зал", width = 20, height = 2, bg=self.color, font=self.font, command=self.clicked_gym).place(x=340, y=200)
-        btn = Button(self.window, text="Режим PvP", width = 20, height = 2, bg=self.color, font=self.font, command=self.clicked_rooms).place(x=340, y=300)
-        btn = Button(self.window, text="Управление", width = 20, height = 2, bg=self.color, font=self.font, command=self.clicked_manual).place(x=340, y=400)
-        btn = Button(self.window, text="Выход", width = 20, height = 2, bg=self.color, font=self.font, command=self.window.quit).place(x=340, y=500)
+        btn = Button(self.window, text="Тренажёрный зал", width = 24, height = 3, bg=self.color, font=self.font, command=self.clicked_gym).place(x=370, y=200)
+        btn = Button(self.window, text="Режим PvP", width = 24, height = 3, bg=self.color, font=self.font, command=self.clicked_rooms).place(x=370, y=300)
+        btn = Button(self.window, text="Управление", width = 24, height = 3, bg=self.color, font=self.font, command=self.clicked_manual).place(x=370, y=400)
+        btn = Button(self.window, text="Выход", width = 24, height = 3, bg=self.color, font=self.font, command=self.window.destroy).place(x=370, y=500)
         self.window.mainloop()
 
     def show_manual(self):
@@ -106,7 +102,7 @@ class Menu:
         imag = img.resize((width, height), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(imag)
         panel = Label(self.window, image=image)
-        panel.pack(side="top", fill="both", expand="no")
+        panel.pack(side="top", fill="both", expand=0)
 
         lbl = Label(self.window, bg='#f5fb53', font=self.font, text="Ваша задача - уничтожить палочного противника раньше, чем он уничтожит вас").place(x=100, y=90)
         lbl = Label(self.window, bg='#f5fb53', font=self.font,
@@ -115,7 +111,7 @@ class Menu:
                     text="Удачи!").place(x=100, y=150)
         lbl = Label(self.window, bg='#f5fb53', font=self.font, text="Игрок 1 - стрелки на клавиатуре").place(x=20, y=250)
         lbl = Label(self.window, bg='#f5fb53', font=self.font, text="Игрок 2 - кнопки WASD").place(x=700, y=250)
-        btn = Button(self.window, font=self.font, text="В меню", command=self.show_menu_2).place(x=0, y=0)
+        btn = Button(self.window, font=self.font, text="В меню", command=self.show_menu).place(x=0, y=0)
         self.window.mainloop()
 
 if __name__ == "__main__":

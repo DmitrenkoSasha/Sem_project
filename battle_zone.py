@@ -211,7 +211,7 @@ def main_battle(number_of_room):
     human_2 = Human(space)
     human_2.create_Human(700, 450)
     for shape in human_2.shapes:
-        shape.color = pygame.Color('green2')
+        shape.color = pygame.Color('blue')
 
     add_blood_handler(0, 0)
     add_blood_handler(0, 3)
