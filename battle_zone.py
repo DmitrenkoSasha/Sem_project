@@ -1,4 +1,10 @@
+import pygame
+from pymunk.pygame_util import *
+from typing import List
+import random
+import pymunk
 import pymunk.pygame_util
+from pymunk.vec2d import Vec2d
 from pygame.locals import *
 from pymunk.vec2d import Vec2d
 
@@ -78,7 +84,6 @@ def main_battle(number_of_room):
         space: параметр необходимый collision handler
         data:  параметр необходимый collision handler
         """
-        global points_1, points_2
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
         #print(part_1)
@@ -147,8 +152,6 @@ def main_battle(number_of_room):
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
     room.run()
 
-    head_list[1].color = pygame.Color('green')
-
     add_blood_handler(0, 13)
     add_blood_handler(0, 15)
     add_blood_handler(0, 17)
@@ -170,8 +173,8 @@ def main_battle(number_of_room):
     def make_text(points1, points2):
         text_1 = font.render(str(points1), True, 'red')
         text_2 = font.render(str(points2), True, 'green2')
-        screen.blit(text_1, (160, 0))
-        screen.blit(text_2, (860, 0))
+        screen.blit(text_1, (160, 5))
+        screen.blit(text_2, (860, 5))
 
     while alive:
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
