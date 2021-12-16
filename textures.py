@@ -156,23 +156,21 @@ class ThreeLevels:
 
 class RandomCircleRoom:
     def __init__(self, space):
-        """ Конструктор комнаты
-
-            Params:
-                space: [pymunk.Space] - область создания
-        """
         self.space = space
         self.amount = 20
         self.balls_width = 40
         self.balls_height = 40
         self.coord = []  # Список с координатами шариков, который используется while_rooms_events
-        self.img = pygame.image.load('мяч.png').convert_alpha()
+        self.img1 = pygame.image.load('камень коричневый.png').convert_alpha()
+        self.img2 = pygame.image.load('камень серый.png').convert_alpha()
 
     def run(self):
-        """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
+        """Функция, запускающаяся в battle_zone после создания комнаты"""
         CommonWalls(self.space)
 
-        line_set = LinesAroundImg('мяч.png', self.balls_width, self.balls_height)
+        line_set1 = LinesAroundImg('камень коричневый.png', self.balls_width, self.balls_height)
+        line_set2 = LinesAroundImg('камень серый.png', self.balls_width, self.balls_height)
+
 
         #  Каждый круг описываем ломанной
         for i in range(1, self.amount, 1):
@@ -180,7 +178,7 @@ class RandomCircleRoom:
             x = random.randint(50, W - 100)  # TODO избавиться от глобальных переменных
             y = random.randint(50, H - 100)
             self.coord.append((x, y))
-            for line in line_set:
+            for line in line_set1:
 
                 # Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm
                 line = pymunk.autogeometry.simplify_curves(line, 0.7)
@@ -188,22 +186,28 @@ class RandomCircleRoom:
                 for j in range(len(line) - 1):
                     shape = pymunk.Segment(self.space.static_body, line[j] + (x, y), line[j + 1] + (x, y), 1)
                     shape.friction = 0.5
-                    shape.color = (255, 255, 255, 255)
+                    shape.color = (25, 25, 25, 25)
                     self.space.add(shape)
+
+            for line in line_set2:
+
+                # Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm
+                line = pymunk.autogeometry.simplify_curves(line, 0.7)
+
+                for j in range(len(line) - 1):
+                    shape = pymunk.Segment(self.space.static_body, line[j] + (x, y), line[j + 1] + (x, y), 1)
+                    shape.friction = 0.5
+                    shape.color = (25, 25, 25, 25)
+                    self.space.add(shape)        
 
 
 class ReverseGravity:
-    """Комната со сломанной гравитацией"""
+    """Поломка гравитации!"""
     def __init__(self, space):
-        """ Конструктор комнаты
-
-            Params:
-                space: [pymunk.Space] - область создания
-        """
         self.space = space
 
     def run(self):
-        """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
+        """Функция, запускающаяся в battle_zone после создания комнаты"""
         CommonWalls(self.space)
         self.space.gravity = (0, -200)
 
@@ -212,10 +216,16 @@ def while_rooms_events(screen, room):
     """Вызывается в while loop в battle_zone. Для каждой комнаты отображает нужную картинку"""
 
     if type(room) is RandomCircleRoom:
-        img = pygame.transform.scale(room.img, (room.balls_width, room.balls_height))
+        img1 = pygame.transform.scale(room.img1, (room.balls_width, room.balls_height))
+        img2 = pygame.transform.scale(room.img2, (room.balls_width, room.balls_height))
         for i in range(room.amount-1):
-            (img_x, img_y) = room.coord[i]
-            screen.blit(img, (img_x, img_y))
+            if i % 2 == 0:
+                (img_x, img_y) = room.coord[i]
+                screen.blit(img1, (img_x, img_y))
+            else:
+                (img_x, img_y) = room.coord[i]
+                screen.blit(img2, (img_x, img_y))
+
     elif type(room) is ThreeLevels:
         img = pygame.transform.scale(room.img, (room.width, room.height))
         screen.blit(img, (room.pos_x, H / 4))

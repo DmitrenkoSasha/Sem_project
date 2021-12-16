@@ -176,7 +176,7 @@ def main_battle(number_of_room):
         shape.color = pygame.Color('green2')
     for shape in human_1_shapes:
         print(shape.collision_type)
-    room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
+    room = create_room(space, 2)  # сюда обращаться за нужной комнатой
     room.run()
 
     add_blood_handler(0, 13)
