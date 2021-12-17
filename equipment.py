@@ -8,11 +8,12 @@ class Pear(pygame.sprite.Sprite):
     def __init__(self, space, x, y, filename, numroom, scale):
         """Боксёрская груша, пользователь будет ставить её представителей, куда ему захочется,
          и возможно, что будут разные картинки.
-         filename: название файла-картинки груши
-         x, y: положение точки подвеса груши в пространстве space
-         numroom: номер комнаты, в которую груша будет добавляться
-         scale: коэф. растяжения картинки и тела, меняющийся от потребностей комнаты
-         """
+            :param str filename: название файла-картинки груши
+            :param float x: положение точки подвеса груши в пространстве space
+            :param float y: положение точки подвеса груши в пространстве space
+            :param int numroom: номер комнаты, в которую груша будет добавляться
+            :param float scale: коэф. растяжения картинки и тела, меняющийся от потребностей комнаты
+        """
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(filename).convert_alpha()  # Графическое представление спрайта
         self.space = space
@@ -97,6 +98,11 @@ class Pear(pygame.sprite.Sprite):
 class Ball(pygame.sprite.Sprite):
     """Падающие розовые мячики"""
     def __init__(self, space, pos_x, pos_y):
+        """Конструктор класса Ball
+            :param pymunk.Space space: пространство для создания
+            :param float pos_x: положение центра по оси x
+            :param float pos_y: положение центра по оси y
+        """
         pygame.sprite.Sprite.__init__(self)
         self.space = space
         self.pos = (pos_x, pos_y)

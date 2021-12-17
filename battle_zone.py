@@ -6,9 +6,7 @@ from pygame import *
 
 def main_battle(number_of_room):
     """ Запускает модуль battle_zone
-
-        Params:
-            number_of_room [int] - номер вызываемой комнаты
+            :param number_of_room [int] - номер вызываемой комнаты
     """
     alive = True
     end = False
@@ -52,11 +50,9 @@ def main_battle(number_of_room):
 
     def create_blood(spaces, center, radiuses):
         """Создаёт кровь в виде маленьких шариков
-
-                Params:
-                    space: [pymunk.Space] - область создания
-                    center: [float, float] - место удара
-                    radius: [float] - размер шариков
+                :param spaces: [pymunk.Space] - область создания
+                :param center: [float, float] - место удара
+                :param radiuses: [float] - размер шариков
         """
         body = pymunk.Body(1000, 1000)
         body.position = center
@@ -72,13 +68,11 @@ def main_battle(number_of_room):
 
     def draw_blood(arbiter, spaces, data):
         """ Отрисовывает кровь при столкновении
+            :param arbiter: словарь для сталкивающихся тел
+            :param pymunk.Space spaces: область создания
+            :param dict data: данные о столкновении, генерируются автоматически
 
-            Params:
-                arbiter: [dict] - словарь для сталкивающихся тел
-                space: [pymunk.Space] - область создания
-                data: [dict] - данные о столкновении, генерируются автоматически
-            Returns:
-                collision: [bool] - Булеан, обозначающий, необходимо ли обрабатывать столкновение
+            :return: Булеан, обозначающий, необходимо ли обрабатывать столкновение
         """
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
@@ -109,10 +103,9 @@ def main_battle(number_of_room):
 
     def count_points(arbiter, spaces, data):
         """ Подсчитывает очки после обработки столкновения
-            Params:
-                arbiter: [dict] - словарь для сталкивающихся тел
-                space: [pymunk.Space] - область создания
-                data: [dict] - данные о столкновении, генерируются автоматически
+            :param arbiter: словарь для сталкивающихся тел
+            :param pymunk.Space spaces: область создания
+            :param dict data: данные о столкновении, генерируются автоматически
         """
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
@@ -191,9 +184,8 @@ def main_battle(number_of_room):
 
     def add_blood_handler(object_1, object_2):
         """ Добавляет обработчик столкновений между объектами с заданными типами collision_types
-            Params:
-                object_1: [int] - первый объект (из collision_types)
-                object_2: [int] - второй объект (из collision_types)
+                :param int object_1: первый объект (из collision_types)
+                :param int object_2: второй объект (из collision_types)
         """
         handler = space.add_collision_handler(object_1, object_2)
         handler.data["surface"] = screen
@@ -201,6 +193,9 @@ def main_battle(number_of_room):
         handler.separate = count_points
 
     def announce_winner(number_of_human):
+        """ Выводит на экран победителя
+                :param int number_of_human: номер победившего игрока
+        """
         announcement = great_font.render('Победил игрок номер ' + str(number_of_human) + '!', True, (255, 255, 255))
         screen.blit(announcement, (300, 350))
 
@@ -219,9 +214,8 @@ def main_battle(number_of_room):
 
     def make_text(points_1, points_2):
         """ Выводит на экран текст с количеством жизней у людей
-            Params:
-                points_1: [int] - жизни первого человека
-                points_2: [int] - жизни второго человека
+                :param int points_1: жизни первого человека
+                :param int points_2: жизни второго человека
         """
         text_1 = great_font.render(str(points_1), True, (255, 0, 0))
         text_2 = great_font.render(str(points_2), True, (0, 0, 255))

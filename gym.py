@@ -32,7 +32,7 @@ def main_gym():
 
     def show_img_things(equipment):
         """Рисует картинки элементов из списка снарядов в зале
-        equipment: список снарядов, которые будут видны в зале, и с которыми можно взаимодействовать"""
+            :param equipment: список снарядов, которые будут видны в зале, и с которыми можно взаимодействовать"""
         for one in equipment:
             if type(one) is Pear:
                 rotated_logo_img, vec_to_c, ps = one.rotate()
@@ -70,8 +70,6 @@ def main_gym():
     while alive:
 
         for event in pygame.event.get():
-            h1.check_event_human(pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d)
-
             if event.type == pygame.QUIT:
                 alive = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -133,7 +131,7 @@ def main_gym():
                 if t is not None:
                     space_gym.remove(t.shape, t.body)
                     things.remove(t)
-
+        h1.check_event_human(pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d)
         mouse_pos = pygame.mouse.get_pos()
         mouse_body.position = mouse_pos
         if len(events) > 0 and total_time > events[0][0]:
