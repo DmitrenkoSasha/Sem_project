@@ -71,11 +71,11 @@ class Pear(pygame.sprite.Sprite):
         # Нужно повернуть на 180 градусов
         angle_degrees = -degrees(self.shape.body.angle)
         rotated_img = pygame.transform.rotate(self.image, angle_degrees)
-        if self.destinationroom == 1:
+        if self.destinationroom == 1:  # Если вызывается в комнате с 8 стенами
             rotated_img = pygame.transform.scale(rotated_img, (round(rotated_img.get_rect().size[0] * self.scale),
                                                                round(rotated_img.get_rect().size[1] * self.scale)))
 
-        # Координаты красной рамки вокруг картинки
+        # Координаты красной рамки вокруг body.shape
         coords_vs = [
             vertice.rotated(self.shape.body.angle) + self.shape.body.position
             for vertice in self.shape.get_vertices()]
@@ -93,12 +93,9 @@ class Pear(pygame.sprite.Sprite):
 
         return rotated_img, vc, coords_vs
 
-    def update(self, *args):
-        pass
-
 
 class Ball(pygame.sprite.Sprite):
-
+    """Падающие розовые мячики"""
     def __init__(self, space, pos_x, pos_y):
         pygame.sprite.Sprite.__init__(self)
         self.space = space
@@ -112,11 +109,6 @@ class Ball(pygame.sprite.Sprite):
         shape.color = (255, 25, 255, 255)
         shape.friction = 0.7
         space.add(body, shape)
-
-
-class Weight:
-    def __init__(self):
-        self.img = pygame.image.load('задний план\\гиря.png').convert_alpha()
 
 
 if __name__ == 'main':

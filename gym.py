@@ -30,40 +30,6 @@ def main_gym():
     options_gym.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     pymunk.pygame_util.positive_y_is_up = False
 
-    (img_x, img_y) = (100, 100)
-
-    filename = r'задний план\мяч.png'
-
-    def sample_func(point):
-        try:
-            position = pymunk.pygame_util.to_pygame(point, logo_img)
-            color = logo_img.get_at(position)
-
-            return color.a
-
-        except IndexError:
-            return 0
-
-    # Generate geometry from pymunk logo image
-
-    logo_img = pygame.image.load(filename).convert_alpha()
-    logo_bb = pymunk.BB(0, 0, logo_img.get_width(), logo_img.get_height())
-
-    logo_img.lock()
-    line_set = pymunk.autogeometry.march_soft(logo_bb, logo_img.get_width(), logo_img.get_height(), 99, sample_func)
-    logo_img.unlock()
-
-    for line in line_set:
-
-        # Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm
-        line = pymunk.autogeometry.simplify_curves(line, 0.7)
-
-        for i in range(len(line) - 1):
-            shape = pymunk.Segment(space_gym.static_body, line[i] + (img_x, img_y), line[i + 1] + (img_x, img_y), 2)
-            shape.friction = 0.5
-            shape.color = (255, 255, 255, 0)
-            space_gym.add(shape)
-
     def show_img_things(equipment):
         """Рисует картинки элементов из списка снарядов в зале
         equipment: список снарядов, которые будут видны в зале, и с которыми можно взаимодействовать"""
@@ -144,7 +110,7 @@ def main_gym():
             elif event.type == smallball:
                 if small_balls <= 0:
                     pygame.time.set_timer(smallball, 0)
-                for x in range(10):
+                for x in range(4):
                     small_balls -= 1
                     mass = 3
                     radius = 8
@@ -152,7 +118,7 @@ def main_gym():
                     b = pymunk.Body(mass, moment)
                     c = pymunk.Circle(b, radius)
                     c.friction = 1
-                    b.position = random.randint(100, 400), 0
+                    b.position = random.randint(100, 800), 0
 
                     space_gym.add(b, c)
 
@@ -180,7 +146,7 @@ def main_gym():
         screen_gym.blit(bg, (0, 0))
         space_gym.debug_draw(options_gym)
         show_img_things(things)
-        screen_gym.blit(pygame.image.load(r'задний план\мяч.png').convert_alpha(), (img_x, img_y))
+
         make_exit_button(screen_gym)
 
         pygame.display.flip()
