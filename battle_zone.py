@@ -28,10 +28,9 @@ def main_battle(number_of_room):
     bg9 = pygame.image.load(r'задний план\фон9.jpg')
     bg10 = pygame.image.load(r'задний план\фон10.jpg')
     bg12 = pygame.image.load(r'задний план\фон12.jpg')
-    bg13 = pygame.image.load(r'задний план\фон13.jpg')
     bg14 = pygame.image.load(r'задний план\фон14.jpg')
 
-    bgss = [bg1, bg2, bg4, bg5, bg6, bg7, bg8, bg9, bg10, bg12, bg13, bg14]
+    bgss = [bg1, bg2, bg4, bg5, bg6, bg7, bg8, bg9, bg10, bg12, bg14]
     i = random.randint(0, 11)
 
     bg = bgss[i]
