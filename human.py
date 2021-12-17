@@ -26,8 +26,9 @@ collision_types = (0, 1, 2, 3)
     "left_leg_2": 18,
     "left_feet_2": 19'''
 
+
 class Human:
-    '''Класс, отвечающий за создание палочных людей. Таковые создаются в модулях gym и battle_zone'''
+    """Класс, отвечающий за создание палочных людей. Таковые создаются в модулях gym и battle_zone"""
     def __init__(self, space):
         """ Конструктор класса Human
 
@@ -36,6 +37,7 @@ class Human:
         """
         self.space = space
         self.shapes = []
+        self.complect = []
         self.points = 0
         self.scale = 1
 
@@ -65,12 +67,12 @@ class Human:
         self.space.add(body, shape)
         return body
 
-    def create_Human(self, x, y, scale = 1):
+    def create_human(self, x, y, scale=1):
         """ Создаёт человека поэлементно, с добавлением суставов и пружин
             Args:
                 x: [float] - x-координата человека  # TODO какая координата?
                 y: [float] - y-координата человека
-                i: [int] - параметр, отвечающий за определение типов столкновения collision_types
+                scale: [int] - параметр, отвечающий за размер человека
         """
         head = self.add_lever((x, y), (0, -30 * scale), (0, -32 * scale), 18, 1, 1021, 0)
         telo = self.add_lever((x, y), (0, 30 * scale), (0, -30 * scale), 6, 2, 682, 1)

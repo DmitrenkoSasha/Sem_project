@@ -2,7 +2,7 @@ import pymunk.pygame_util
 from textures import *
 from human import *
 from pygame import *
-from tkinter import Button
+
 
 def main_battle(number_of_room):
     """ Запускает модуль battle_zone
@@ -20,13 +20,12 @@ def main_battle(number_of_room):
 
     bg1 = pygame.image.load(r'задний план\background.png')
     bg2 = pygame.image.load(r'задний план\фон2.jpg')
-    
+
     bg5 = pygame.image.load(r'задний план\фон4.jpg')
-    
-    
+
     bg7 = pygame.image.load(r'задний план\фон7.png')
     bg8 = pygame.image.load(r'задний план\фон8.png')
-    
+
     bg10 = pygame.image.load(r'задний план\фон10.jpg')
     bg12 = pygame.image.load(r'задний план\фон12.jpg')
     bg14 = pygame.image.load(r'задний план\фон14.jpg')
@@ -37,18 +36,12 @@ def main_battle(number_of_room):
     bg = bgss[i]
     bg = pygame.transform.scale(bg, (W, H))
     space = pymunk.Space()
-    scale = 1.2
     space.gravity = (0, 100)  #
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("WeAreDIMDAM", 50)
     draw_options = pymunk.pygame_util.DrawOptions(screen)
     draw_options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     balls = []
-    handlers = []
-    balls_to_remove = []
-    head_list = []
-    human_1_shapes = []
-    human_2_shapes = []
 
     pygame.mixer.music.load('фон.wav')
     pygame.mixer.music.set_volume(0.1)
@@ -89,7 +82,8 @@ def main_battle(number_of_room):
         """
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
-        if ((part_1 in human_1.shapes) and (part_2 in human_2.shapes)) or ((part_2 in human_1.shapes) and (part_1 in human_2.shapes)):
+        if ((part_1 in human_1.shapes) and (part_2 in human_2.shapes)) or (
+                (part_2 in human_1.shapes) and (part_1 in human_2.shapes)):
             for c in arbiter.contact_point_set.points:
                 r = max(3, abs(c.distance * 5))
                 r = int(r)
@@ -126,7 +120,7 @@ def main_battle(number_of_room):
             if part_2 == human_2.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_2 == human_2.shapes[i]:
                     human_1.points -= 2
             for i in range(6, 10, 1):
@@ -136,17 +130,17 @@ def main_battle(number_of_room):
             if part_1 == human_2.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_1 == human_2.shapes[i]:
                     human_1.points -= 2
             for i in range(6, 10, 1):
                 if part_1 == human_2.shapes[i]:
-                    human_1.points -= 3  #head 1 blow
+                    human_1.points -= 3  # head 1 blow
         elif part_1 == human_2.shapes[0]:
             if part_2 == human_1.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_2 == human_1.shapes[i]:
                     human_2.points -= 2
             for i in range(6, 10, 1):
@@ -156,43 +150,42 @@ def main_battle(number_of_room):
             if part_1 == human_1.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_1 == human_1.shapes[i]:
                     human_2.points -= 2
             for i in range(6, 10, 1):
                 if part_1 == human_1.shapes[i]:
-                    human_2.points -= 3     #head 2 blow
+                    human_2.points -= 3  # head 2 blow
 
         if part_1 == human_1.shapes[1]:
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_2 == human_2.shapes[i]:
                     human_1.points -= 1
             for i in range(6, 10, 1):
                 if part_2 == human_2.shapes[i]:
                     human_1.points -= 2
         elif part_2 == human_1.shapes[1]:
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_1 == human_2.shapes[i]:
                     human_1.points -= 1
             for i in range(6, 10, 1):
                 if part_1 == human_2.shapes[i]:
-                    human_1.points -= 2     #body 1 blow
+                    human_1.points -= 2  # body 1 blow
 
         elif part_1 == human_2.shapes[1]:
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_2 == human_1.shapes[i]:
                     human_2.points -= 1
             for i in range(6, 10, 1):
                 if part_2 == human_1.shapes[i]:
                     human_2.points -= 2
         elif part_2 == human_2.shapes[1]:
-            for i in range (2, 6, 1):
+            for i in range(2, 6, 1):
                 if part_1 == human_1.shapes[i]:
                     human_2.points -= 1
             for i in range(6, 10, 1):
                 if part_1 == human_1.shapes[i]:
-                    human_2.points -= 2    #body 1 blow
-
+                    human_2.points -= 2  # body 1 blow
 
     def add_blood_handler(object_1, object_2):
         """ Добавляет обработчик столкновений между объектами с заданными типами collision_types
@@ -206,15 +199,15 @@ def main_battle(number_of_room):
         handler.separate = count_points
 
     def announce_winner(number_of_human):
-        announcement = font.render('Победил игрок номер '+str(number_of_human)+'!', True, (255, 255, 255))
+        announcement = font.render('Победил игрок номер ' + str(number_of_human) + '!', True, (255, 255, 255))
         screen.blit(announcement, (300, 350))
 
     human_1 = Human(space)
-    human_1.create_Human(100, 550)
+    human_1.create_human(100, 550)
     for shape in human_1.shapes:
         shape.color = pygame.Color('red')
     human_2 = Human(space)
-    human_2.create_Human(900, 550)
+    human_2.create_human(900, 550)
     for shape in human_2.shapes:
         shape.color = pygame.Color('blue')
 
@@ -241,15 +234,16 @@ def main_battle(number_of_room):
     timer, amount = room.run()
 
     while alive:
-        FPS = 30
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
         human_2.check_event_human(K_w, K_a, K_s, K_d)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 alive = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0]>460) and (mouse.get_pos()[0]<540) and (mouse.get_pos()[1]>680):
+            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0] > 460) and (
+                    mouse.get_pos()[0] < 540) and (mouse.get_pos()[1] > 680):
                 alive = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0]>460) and (mouse.get_pos()[0]<540) and (mouse.get_pos()[1]>450) and (end == True):
+            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0] > 460) and (
+                    mouse.get_pos()[0] < 540) and (mouse.get_pos()[1] > 450) and (end == True):
                 pass
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
@@ -267,20 +261,6 @@ def main_battle(number_of_room):
                 b.position = random.randint(100, 400), 0
 
                 space.add(b, c)
-            elif event.type == room.event and type(room) is ReverseGravity:
-                if amount <= 0:
-                    pygame.time.set_timer(room.event, 0)
-
-                amount -= 1
-                mass = 3
-                radius = 8
-                moment = pymunk.moment_for_circle(mass, 0, radius)
-                b = pymunk.Body(mass, moment)
-                c = pymunk.Circle(b, radius)
-                c.friction = 1
-                b.position = random.randint(50, W-50), H-50
-
-                space.add(b, c)
 
         screen.fill(white)
         screen.blit(bg, (0, 0))
@@ -291,14 +271,14 @@ def main_battle(number_of_room):
 
         screen.blit(hart_img, (0, -25))
         screen.blit(hart_img, (700, -25))
-        quit_button = pygame.draw.rect(screen,(128,128,128),(460,670,80,30));
-        if end == False:
-            if human_1.points<=0:
+        quit_button = pygame.draw.rect(screen, (128, 128, 128), (460, 670, 80, 30))
+        if not end:
+            if human_1.points <= 0:
                 human_1.points = 0
                 announce_winner(2)
                 end = True
                 pygame.display.update()
-            if human_2.points<=0:
+            if human_2.points <= 0:
                 human_2.points = 0
                 announce_winner(1)
                 end = True
@@ -308,7 +288,7 @@ def main_battle(number_of_room):
 
             pygame.display.update()  # Обновляет весь экран, если не передать аргумент
 
-        clock.tick(FPS)
+        clock.tick(30)
 
     pygame.quit()
 
