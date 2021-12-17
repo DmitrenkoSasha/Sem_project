@@ -6,6 +6,7 @@ import pymunk.pygame_util
 import random
 
 from equipment import Pear, Ball
+from textures import common_walls
 
 
 def main_gym():
@@ -30,7 +31,7 @@ def main_gym():
 
     (img_x, img_y) = (100, 100)
 
-    filename = 'задний план\мяч.png'
+    filename = r'задний план\мяч.png'
 
     def sample_func(point):
         try:
@@ -39,7 +40,7 @@ def main_gym():
 
             return color.a
 
-        except:
+        except IndexError:
             return 0
 
     # Generate geometry from pymunk logo image
@@ -77,19 +78,6 @@ def main_gym():
         text_exit = font_exit.render('В меню', True, (0, 0, 0))
         screen.blit(text_exit, (462, 680))
 
-    def walls():
-        floor_shape = pymunk.Segment(space_gym.static_body, (0, h), (w, h), 30)
-        space_gym.add(floor_shape)
-
-        left_wall_shape = pymunk.Segment(space_gym.static_body, (0, 0), (0, h), 30)
-        space_gym.add(left_wall_shape)
-
-        right_wall_shape = pymunk.Segment(space_gym.static_body, (w, 0), (w, h), 30)
-        space_gym.add(right_wall_shape)
-
-        roof_shape = pymunk.Segment(space_gym.static_body, (0, 0), (w, 0), 30)
-        space_gym.add(roof_shape)
-
     humans = []
     things = []
     active_thing = None
@@ -97,16 +85,14 @@ def main_gym():
     h1 = Human(space_gym)
     humans.append(h1)
     h1.create_human(400, 100, 1)
-    walls()
-    p1 = Pear(space_gym, 2 * w // 3, h // 2, 'задний план\груша.png', -1, 1)
+    common_walls(space_gym)
+    p1 = Pear(space_gym, 2 * w // 3, h // 2, r'задний план\груша.png', -1, 1)
     things.append(p1)
 
     mouse_joint = None
     mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
-    events = []
-    events.append((5.0, Ball(space_gym, 300, 100).add_ball))
-    events.append((10.0, Ball(space_gym, 300, 100).add_ball))
+    events = [(5.0, Ball(space_gym, 300, 100).add_ball), (10.0, Ball(space_gym, 300, 100).add_ball)]
     events.sort(key=lambda z: z[0])
     total_time = 0
 
@@ -181,8 +167,6 @@ def main_gym():
                     space_gym.remove(t.shape, t.body)
                     things.remove(t)
 
-
-
         mouse_pos = pygame.mouse.get_pos()
         mouse_body.position = mouse_pos
 
@@ -196,7 +180,7 @@ def main_gym():
         screen_gym.blit(bg, (0, 0))
         space_gym.debug_draw(options_gym)
         show_img_things(things)
-        screen_gym.blit(pygame.image.load('задний план\мяч.png').convert_alpha(), (img_x, img_y))
+        screen_gym.blit(pygame.image.load(r'задний план\мяч.png').convert_alpha(), (img_x, img_y))
         make_exit_button(screen_gym)
 
         pygame.display.flip()

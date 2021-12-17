@@ -31,7 +31,7 @@ def lines_around_img(filename, width, height):
             p = pymunk.pygame_util.to_pygame(point, logo_img)
             color = logo_img.get_at(p)
             return color.a - 100
-        except:
+        except IndexError:
             return 0
 
     line_set = pymunk.autogeometry.march_soft(logo_bb, logo_img.get_width(), logo_img.get_height(), 99, sample_func)
@@ -82,10 +82,9 @@ class TypicalWalls:
     def run(self):
         """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
         common_walls(self.space)
-        timer = pygame.time.set_timer(self.event, 100)
         small_balls = 100
 
-        return timer, small_balls
+        return small_balls
 
 
 class FourExtraWalls:
@@ -119,7 +118,7 @@ class FourExtraWalls:
         self.things.append(p1)
         self.things.append(p2)
 
-        return 0, 0
+        return 0
 
 
 class ThreeLevels:
@@ -150,7 +149,7 @@ class ThreeLevels:
                     shape.color = (255, 255, 255, 255)
                     self.space.add(shape)
 
-        return 0, 0
+        return 0
 
 
 class RandomCircleRoom:
@@ -163,6 +162,15 @@ class RandomCircleRoom:
         self.img1 = pygame.image.load('задний план\\камень коричневый.png').convert_alpha()
         self.img2 = pygame.image.load('задний план\\камень серый.png').convert_alpha()
         self.event = None
+
+    def set_line(self, line, x, y):
+        """Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm"""
+        line = pymunk.autogeometry.simplify_curves(line, 0.5)
+        for j in range(len(line) - 1):
+            shape = pymunk.Segment(self.space.static_body, line[j] + (x, y), line[j + 1] + (x, y), 1)
+            shape.friction = 0.5
+            shape.color = (25, 25, 25, 25)
+            self.space.add(shape)
 
     def run(self):
         """Функция, запускающаяся в battle_zone после создания комнаты"""
@@ -178,28 +186,11 @@ class RandomCircleRoom:
             y = random.randint(50, H - 200)
             self.stones_coord.append((x, y))
             for line in line_set1:
-
-                # Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm
-                line = pymunk.autogeometry.simplify_curves(line, 0.7)
-
-                for j in range(len(line) - 1):
-                    shape = pymunk.Segment(self.space.static_body, line[j] + (x, y), line[j + 1] + (x, y), 1)
-                    shape.friction = 0.5
-                    shape.color = (25, 25, 25, 25)
-                    self.space.add(shape)
-
+                self.set_line(line, x, y)
             for line in line_set2:
+                self.set_line(line, x, y)
 
-                # Returns a copy of a polyline simplified by using the Douglas-Peucker algorithm
-                line = pymunk.autogeometry.simplify_curves(line, 0.7)
-
-                for j in range(len(line) - 1):
-                    shape = pymunk.Segment(self.space.static_body, line[j] + (x, y), line[j + 1] + (x, y), 1)
-                    shape.friction = 0.5
-                    shape.color = (25, 25, 25, 25)
-                    self.space.add(shape)
-
-        return 0, 0
+        return 0
 
 
 class ReverseGravity:
@@ -213,10 +204,9 @@ class ReverseGravity:
         """Функция, запускающаяся в battle_zone после создания комнаты"""
         common_walls(self.space)
         self.space.gravity = (0, -200)
-        timer = pygame.time.set_timer(self.event, 100)
         small_balls = 100
 
-        return timer, small_balls
+        return small_balls
 
 
 def while_rooms_events(screen, room):
@@ -243,25 +233,6 @@ def while_rooms_events(screen, room):
             if type(one) is Pear:
                 rotated_img, vec_to_c, ps = one.rotate()
                 screen.blit(rotated_img, (round(vec_to_c.x), round(vec_to_c.y)))
-
-
-'''def while_rooms_events2(space, room):
-    if type(room) is TypicalWalls:
-
-        if room.event.type == room.event:
-            if small_balls <= 0:
-                pygame.time.set_timer(room.event, 0)
-            for x in range(10):
-                small_balls -= 1
-                mass = 3
-                radius = 8
-                moment = pymunk.moment_for_circle(mass, 0, radius)
-                b = pymunk.Body(mass, moment)
-                c = pymunk.Circle(b, radius)
-                c.friction = 1
-                b.position = random.randint(100, 400), 0
-
-                space.add(b, c)'''
 
 
 def create_room(space, number_of_room):

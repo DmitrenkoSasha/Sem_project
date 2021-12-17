@@ -18,17 +18,17 @@ def main_battle(number_of_room):
 
     screen = pygame.display.set_mode((W, H))
 
-    bg1 = pygame.image.load(r'задний план\background.png')
-    bg2 = pygame.image.load(r'задний план\фон2.jpg')
+    bg1 = pygame.image.load(r'задний план\\background.png')
+    bg2 = pygame.image.load(r'задний план\\фон2.jpg')
 
-    bg5 = pygame.image.load(r'задний план\фон4.jpg')
+    bg5 = pygame.image.load(r'задний план\\фон4.jpg')
 
-    bg7 = pygame.image.load(r'задний план\фон7.png')
-    bg8 = pygame.image.load(r'задний план\фон8.png')
+    bg7 = pygame.image.load(r'задний план\\фон7.png')
+    bg8 = pygame.image.load(r'задний план\\фон8.png')
 
-    bg10 = pygame.image.load(r'задний план\фон10.jpg')
-    bg12 = pygame.image.load(r'задний план\фон12.jpg')
-    bg14 = pygame.image.load(r'задний план\фон14.jpg')
+    bg10 = pygame.image.load(r'задний план\\фон10.jpg')
+    bg12 = pygame.image.load(r'задний план\\фон12.jpg')
+    bg14 = pygame.image.load(r'задний план\\фон14.jpg')
 
     bgss = [bg1, bg2, bg5, bg7, bg8, bg10, bg12, bg14]
     i = random.randint(0, 7)
@@ -43,15 +43,15 @@ def main_battle(number_of_room):
     draw_options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     balls = []
 
-    pygame.mixer.music.load('фон.wav')
+    pygame.mixer.music.load(r'sounds\\фон.wav')
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
-    sound2 = pygame.mixer.Sound('удар по груше.wav')
-    hart_img = pygame.image.load('задний план\\hart.png')
+    sound2 = pygame.mixer.Sound(r'sounds\\удар по груше.wav')
+    hart_img = pygame.image.load(r'задний план\\hart.png')
     hart_img = pygame.transform.scale(hart_img, (300, 90))
 
     def create_blood(spaces, center, radiuses):
-        """ Создаёт кровь в виде маленьких шариков
+        """Создаёт кровь в виде маленьких шариков
 
                 Params:
                     space: [pymunk.Space] - область создания
@@ -233,7 +233,7 @@ def main_battle(number_of_room):
 
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
 
-    timer, amount = room.run()
+    amount = room.run()
 
     while alive:
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)

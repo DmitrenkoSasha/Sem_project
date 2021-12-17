@@ -11,9 +11,11 @@ from PIL import ImageTk, Image
 
 class Menu:
     def __init__(self):
+        """ Конструктор класса Menu"""
         self.background = r'задний план\menu_bg.png'
         self.color = 'lightgreen'
         self.images = []
+        self.window = None
 
     @staticmethod
     def clicked_gym():
@@ -23,6 +25,7 @@ class Menu:
     @staticmethod
     def clicked(number_of_room):
         """ При нажатии на кнопку начинает исполнение модуля battle_zone
+
             Params:
                 number_of_room: [int] - номер вызываемой комнаты
         """
@@ -54,6 +57,7 @@ class Menu:
 
     def add_image(self, path, width, height):
         """ Позволяет добавить изображение на экран Tkinter
+
             Params:
                 path: [str] - имя изображения
                 width: [int] - ширина изображения в пикселях
