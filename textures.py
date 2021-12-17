@@ -1,10 +1,8 @@
-import random
-
+from random import randint
 import pygame
 import pymunk
 import pymunk.autogeometry
 import pymunk.pygame_util
-
 from equipment import Pear
 
 W = 1000
@@ -17,7 +15,8 @@ def lines_around_img(filename, width, height):
             filename: [str] - название картинки, которую нужно окружить ломанной
             width: [float] - необходимая ширина изображения, каким оно будет видно на экране
             height: [float] - необходимая высота изображения
-            return: [pymunk.autogeometry.PolylineSet] - массив координат
+        return:
+            [pymunk.autogeometry.PolylineSet] - массив координат
     """
     logo_img = pygame.image.load(filename).convert_alpha()
     logo_img = pygame.transform.scale(logo_img, (width, height))
@@ -25,8 +24,12 @@ def lines_around_img(filename, width, height):
     logo_img.lock()
 
     def sample_func(point):
-        """Необходима для march_soft
-        return: целое число, отвечающее, как близко расположена ломанная к картинке, отриц. знач. не имеют смысла"""
+        """ Необходима для march_soft
+            Params:
+                point: tuple[float, float] - координаты точки
+            return:
+                [int] целое число, отвечающее, как близко расположена ломанная к картинке, отриц. знач. не имеют смысла
+        """
         try:
             p = pymunk.pygame_util.to_pygame(point, logo_img)
             color = logo_img.get_at(p)
@@ -182,8 +185,8 @@ class RandomCircleRoom:
         #  Каждый круг описываем ломанной
         for i in range(1, self.amount, 1):
             #  Положение одного круга
-            x = random.randint(50, W - 50)
-            y = random.randint(50, H - 200)
+            x = randint(50, W - 50)
+            y = randint(50, H - 200)
             self.stones_coord.append((x, y))
             for line in line_set1:
                 self.set_line(line, x, y)

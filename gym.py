@@ -1,10 +1,11 @@
-from human import *
+
 import pymunk.autogeometry
 from pymunk.vec2d import Vec2d
 from pymunk.pygame_util import *
 import pymunk.pygame_util
 import random
 
+from human import *
 from equipment import Pear, Ball
 from textures import common_walls
 
@@ -22,7 +23,7 @@ def main_gym():
 
     screen_gym = pygame.display.set_mode((w, h))
     space_gym = pymunk.Space()
-    space_gym.gravity = (0, 900)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
+    space_gym.gravity = (0, 100)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
     space_gym.sleep_time_threshold = 0.3
     clock_gym = pygame.time.Clock()
     options_gym = pymunk.pygame_util.DrawOptions(screen_gym)
@@ -81,7 +82,6 @@ def main_gym():
     humans = []
     things = []
     active_thing = None
-
     h1 = Human(space_gym)
     humans.append(h1)
     h1.create_human(400, 100, 1)
@@ -104,6 +104,7 @@ def main_gym():
     while alive:
 
         for event in pygame.event.get():
+            h1.check_event_human(pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d)
 
             if event.type == pygame.QUIT:
                 alive = False
@@ -169,7 +170,6 @@ def main_gym():
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_body.position = mouse_pos
-
         if len(events) > 0 and total_time > events[0][0]:
             t, f = events.pop(0)
 

@@ -31,7 +31,7 @@ def main_battle(number_of_room):
     bg14 = pygame.image.load(r'задний план\\фон14.jpg')
 
     bgss = [bg1, bg2, bg5, bg7, bg8, bg10, bg12, bg14]
-    i = random.randint(0, 7)
+    i = randint(0, 7)
 
     bg = bgss[i]
     bg = pygame.transform.scale(bg, (W, H))
@@ -64,8 +64,8 @@ def main_battle(number_of_room):
         circle_shape.color = pygame.Color('red')
         circle_shape.filter = pymunk.ShapeFilter(categories=1024, mask=0)
         spaces.add(body, circle_shape)  # Объединили душу и тело
-        v1 = random.randint(-300, 300)
-        v2 = random.randint(30, 300)
+        v1 = randint(-300, 300)
+        v2 = randint(30, 300)
         body.velocity = (v1, v2)
         balls.append(circle_shape)
         return circle_shape
@@ -90,7 +90,7 @@ def main_battle(number_of_room):
 
                 p = pymunk.pygame_util.to_pygame(point.point_a, data["surface"])
                 pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)
-                for n in range(20):
+                for n in range(50):
                     create_blood(spaces, p, 2)
                 sound2.play()
 
@@ -257,7 +257,7 @@ def main_battle(number_of_room):
                 b = pymunk.Body(mass, moment)
                 c = pymunk.Circle(b, radius)
                 c.friction = 1
-                b.position = random.randint(100, 400), 0
+                b.position = randint(100, 400), 0
 
                 space.add(b, c)
 

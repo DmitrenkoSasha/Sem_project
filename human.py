@@ -4,27 +4,6 @@ import pymunk.pygame_util
 
 
 collision_types = (0, 1, 2, 3)
-''' "head_1": 0,
-    "body_1": 1,
-    "right_arm_1": 2,
-    "right_hand_1": 3,
-    "left_arm_1": 4,
-    "left_hand_1": 5,
-    "right_leg_1": 6,
-    "right_feet_1": 7,
-    "left_leg_1": 8,
-    "left_feet_1": 9,
-
-    "head_2": 10,
-    "body_2": 11,
-    "right_arm_2": 12,
-    "right_hand_2": 13,
-    "left_arm_2": 14,
-    "left_hand_2": 15,
-    "right_leg_2": 16,
-    "right_feet_2": 17,
-    "left_leg_2": 18,
-    "left_feet_2": 19'''
 
 
 class Human:

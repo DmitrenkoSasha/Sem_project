@@ -1,6 +1,6 @@
-import pygame
+import pygame  # sprites, transform, images
 import pymunk
-import math
+from math import degrees
 from pymunk.vec2d import Vec2d
 
 
@@ -69,7 +69,7 @@ class Pear(pygame.sprite.Sprite):
         vec_rot = Vec2d(vec_rot.x, vec_rot.y)
 
         # Нужно повернуть на 180 градусов
-        angle_degrees = -math.degrees(self.shape.body.angle)
+        angle_degrees = -degrees(self.shape.body.angle)
         rotated_img = pygame.transform.rotate(self.image, angle_degrees)
         if self.destinationroom == 1:
             rotated_img = pygame.transform.scale(rotated_img, (round(rotated_img.get_rect().size[0] * self.scale),
