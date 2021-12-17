@@ -2,7 +2,7 @@ import pymunk.pygame_util
 from textures import *
 from human import *
 from pygame import *
-
+from tkinter import Button
 
 def main_battle(number_of_room):
     """ Запускает модуль battle_zone
@@ -11,6 +11,7 @@ def main_battle(number_of_room):
             number_of_room [int] - номер вызываемой комнаты
     """
     alive = True
+    end = False
     white = (255, 255, 255)
 
     pygame.init()
@@ -31,7 +32,7 @@ def main_battle(number_of_room):
     bg14 = pygame.image.load(r'задний план\фон14.jpg')
 
     bgss = [bg1, bg2, bg5, bg7, bg8, bg10, bg12, bg14]
-    i = random.randint(0, 11)
+    i = random.randint(0, 7)
 
     bg = bgss[i]
     space = pymunk.Space()
@@ -203,6 +204,10 @@ def main_battle(number_of_room):
         handler.begin = draw_blood
         handler.separate = count_points
 
+    def announce_winner(number_of_human):
+        announcement = font.render('Победил игрок номер '+str(number_of_human)+'!', True, (255, 255, 255))
+        screen.blit(announcement, (300, 350))
+
     human_1 = Human(space)
     human_1.create_Human(300, 450)
     for shape in human_1.shapes:
@@ -223,23 +228,30 @@ def main_battle(number_of_room):
                 points_2: [int] - жизни второго человека
         """
         text_1 = font.render(str(points_1), True, (255, 0, 0))
-        text_2 = font.render(str(points_2), True, (0, 255, 0))
+        text_2 = font.render(str(points_2), True, (0, 0, 255))
+        font_exit = pygame.font.SysFont("WeAreDIMDAM", 30)
+        text_3 = font_exit.render('В меню', True, (0, 0, 0))
         screen.blit(text_1, (160, 0))
         screen.blit(text_2, (860, 0))
+        screen.blit(text_3, (462, 680))
 
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
 
     timer, amount = room.run()
 
     while alive:
+        FPS = 30
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
         human_2.check_event_human(K_w, K_a, K_s, K_d)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 alive = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0]>460) and (mouse.get_pos()[0]<540) and (mouse.get_pos()[1]>680):
+                alive = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0]>460) and (mouse.get_pos()[0]<540) and (mouse.get_pos()[1]>450) and (end == True):
+                pass
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
-
             elif event.type == room.event and type(room) is TypicalWalls:
                 if amount <= 0:
                     pygame.time.set_timer(room.event, 0)
@@ -278,11 +290,24 @@ def main_battle(number_of_room):
 
         screen.blit(hart_img, (0, -25))
         screen.blit(hart_img, (700, -25))
-        make_text(human_1.points, human_2.points)
+        quit_button = pygame.draw.rect(screen,(128,128,128),(460,670,80,30));
+        if end == False:
+            if human_1.points<=0:
+                human_1.points = 0
+                announce_winner(2)
+                end = True
+                pygame.display.update()
+            if human_2.points<=0:
+                human_2.points = 0
+                announce_winner(1)
+                end = True
+                pygame.display.update()
 
-        pygame.display.update()  # Обновляет весь экран, если не передать аргумент
+            make_text(human_1.points, human_2.points)
 
-        clock.tick(30)
+            pygame.display.update()  # Обновляет весь экран, если не передать аргумент
+
+        clock.tick(FPS)
 
     pygame.quit()
 
