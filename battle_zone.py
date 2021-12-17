@@ -44,7 +44,7 @@ def main_battle(number_of_room):
     pygame.mixer.music.load(r'sounds\\фон.wav')
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
-    sound2 = pygame.mixer.Sound(r'sounds\\удар по груше.wav')
+    sound2 = pygame.mixer.Sound(r'sounds\\удар.mp3')
     hart_img = pygame.image.load(r'задний план\\hart.png')
     hart_img = pygame.transform.scale(hart_img, (300, 90))
 
