@@ -22,11 +22,11 @@ class Pear(pygame.sprite.Sprite):
         self.x, self.y = x, y
         self.mass = 50
         self.destinationroom = numroom
-        self.body = self.AddBodyPear()
-        self.shape = self.AddShapePear()
+        self.body = self.add_body_pear()
+        self.shape = self.add_shape_pear()
         self.filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1)
 
-    def AddBodyPear(self):
+    def add_body_pear(self):
         """Добавляет тело груши и точку вращения. Вызывается внутри класса Pear"""
 
         moment = pymunk.moment_for_poly(self.mass, self.vs)
@@ -50,7 +50,7 @@ class Pear(pygame.sprite.Sprite):
 
         return body
 
-    def AddShapePear(self):
+    def add_shape_pear(self):
         """Добавляет форму для груши. Вызывается внутри класса Pear"""
         shape = pymunk.Poly(self.body, self.vs)
         shape.friction = 1
@@ -115,8 +115,8 @@ class Ball(pygame.sprite.Sprite):
 
 
 class Weight:
-    def __init__(self, space, pos_x, pos_y):
-        self.img = pygame.image.load('задний план\гиря.png').convert_alpha()
+    def __init__(self):
+        self.img = pygame.image.load('задний план\\гиря.png').convert_alpha()
 
 
 if __name__ == 'main':

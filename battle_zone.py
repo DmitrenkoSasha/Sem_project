@@ -38,7 +38,7 @@ def main_battle(number_of_room):
     space = pymunk.Space()
     space.gravity = (0, 100)  #
     clock = pygame.time.Clock()
-    font = pygame.font.SysFont("WeAreDIMDAM", 50)
+    great_font = pygame.font.SysFont("WeAreDIMDAM", 50)
     draw_options = pymunk.pygame_util.DrawOptions(screen)
     draw_options.flags = pymunk.SpaceDebugDrawOptions.DRAW_SHAPES
     balls = []
@@ -47,10 +47,10 @@ def main_battle(number_of_room):
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
     sound2 = pygame.mixer.Sound('удар по груше.wav')
-    hart_img = pygame.image.load('задний план\hart.png')
+    hart_img = pygame.image.load('задний план\\hart.png')
     hart_img = pygame.transform.scale(hart_img, (300, 90))
 
-    def create_blood(space, center, radius):
+    def create_blood(spaces, center, radiuses):
         """ Создаёт кровь в виде маленьких шариков
 
                 Params:
@@ -60,17 +60,17 @@ def main_battle(number_of_room):
         """
         body = pymunk.Body(1000, 1000)
         body.position = center
-        shape = pymunk.Circle(body, radius)
-        shape.color = pygame.Color('red')
-        shape.filter = pymunk.ShapeFilter(categories=1024, mask=0)
-        space.add(body, shape)  # Объединили душу и тело
+        circle_shape = pymunk.Circle(body, radiuses)
+        circle_shape.color = pygame.Color('red')
+        circle_shape.filter = pymunk.ShapeFilter(categories=1024, mask=0)
+        spaces.add(body, circle_shape)  # Объединили душу и тело
         v1 = random.randint(-300, 300)
         v2 = random.randint(30, 300)
         body.velocity = (v1, v2)
-        balls.append(shape)
-        return shape
+        balls.append(circle_shape)
+        return circle_shape
 
-    def draw_blood(arbiter, space, data):
+    def draw_blood(arbiter, spaces, data):
         """ Отрисовывает кровь при столкновении
 
             Params:
@@ -84,14 +84,14 @@ def main_battle(number_of_room):
         part_2 = arbiter.shapes[1]
         if ((part_1 in human_1.shapes) and (part_2 in human_2.shapes)) or (
                 (part_2 in human_1.shapes) and (part_1 in human_2.shapes)):
-            for c in arbiter.contact_point_set.points:
-                r = max(3, abs(c.distance * 5))
+            for point in arbiter.contact_point_set.points:
+                r = max(3, abs(point.distance * 5))
                 r = int(r)
 
-                p = pymunk.pygame_util.to_pygame(c.point_a, data["surface"])
+                p = pymunk.pygame_util.to_pygame(point.point_a, data["surface"])
                 pygame.draw.circle(data["surface"], pygame.Color("black"), p, r, 1)
-                for i in range(20):
-                    create_blood(space, p, 2)
+                for n in range(20):
+                    create_blood(spaces, p, 2)
                 sound2.play()
 
                 #  Draw stuff
@@ -103,11 +103,11 @@ def main_battle(number_of_room):
                     pygame.draw.circle(screen, pygame.Color("blue"), pos, int(ball.radius), 2)
 
                 for ball in balls_to_remove:
-                    space.remove(ball, ball.body)
+                    spaces.remove(ball, ball.body)
                     balls.remove(ball)
         return True
 
-    def count_points(arbiter, space, data):
+    def count_points(arbiter, spaces, data):
         """ Подсчитывает очки после обработки столкновения
             Params:
                 arbiter: [dict] - словарь для сталкивающихся тел
@@ -116,75 +116,77 @@ def main_battle(number_of_room):
         """
         part_1 = arbiter.shapes[0]
         part_2 = arbiter.shapes[1]
+        if (spaces == spaces) and (data == data):
+            pass
         if part_1 == human_1.shapes[0]:
             if part_2 == human_2.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range(2, 6, 1):
-                if part_2 == human_2.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_2 == human_2.shapes[n]:
                     human_1.points -= 2
-            for i in range(6, 10, 1):
-                if part_2 == human_2.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_2 == human_2.shapes[n]:
                     human_1.points -= 3
         elif part_2 == human_1.shapes[0]:
             if part_1 == human_2.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range(2, 6, 1):
-                if part_1 == human_2.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_1 == human_2.shapes[n]:
                     human_1.points -= 2
-            for i in range(6, 10, 1):
-                if part_1 == human_2.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_1 == human_2.shapes[n]:
                     human_1.points -= 3  # head 1 blow
         elif part_1 == human_2.shapes[0]:
             if part_2 == human_1.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range(2, 6, 1):
-                if part_2 == human_1.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_2 == human_1.shapes[n]:
                     human_2.points -= 2
-            for i in range(6, 10, 1):
-                if part_2 == human_1.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_2 == human_1.shapes[n]:
                     human_2.points -= 3
         elif part_2 == human_2.shapes[0]:
             if part_1 == human_1.shapes[0]:
                 human_1.points -= 2
                 human_2.points -= 2
-            for i in range(2, 6, 1):
-                if part_1 == human_1.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_1 == human_1.shapes[n]:
                     human_2.points -= 2
-            for i in range(6, 10, 1):
-                if part_1 == human_1.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_1 == human_1.shapes[n]:
                     human_2.points -= 3  # head 2 blow
 
         if part_1 == human_1.shapes[1]:
-            for i in range(2, 6, 1):
-                if part_2 == human_2.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_2 == human_2.shapes[n]:
                     human_1.points -= 1
-            for i in range(6, 10, 1):
-                if part_2 == human_2.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_2 == human_2.shapes[n]:
                     human_1.points -= 2
         elif part_2 == human_1.shapes[1]:
-            for i in range(2, 6, 1):
-                if part_1 == human_2.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_1 == human_2.shapes[n]:
                     human_1.points -= 1
-            for i in range(6, 10, 1):
-                if part_1 == human_2.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_1 == human_2.shapes[n]:
                     human_1.points -= 2  # body 1 blow
 
         elif part_1 == human_2.shapes[1]:
-            for i in range(2, 6, 1):
-                if part_2 == human_1.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_2 == human_1.shapes[n]:
                     human_2.points -= 1
-            for i in range(6, 10, 1):
-                if part_2 == human_1.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_2 == human_1.shapes[n]:
                     human_2.points -= 2
         elif part_2 == human_2.shapes[1]:
-            for i in range(2, 6, 1):
-                if part_1 == human_1.shapes[i]:
+            for n in range(2, 6, 1):
+                if part_1 == human_1.shapes[n]:
                     human_2.points -= 1
-            for i in range(6, 10, 1):
-                if part_1 == human_1.shapes[i]:
+            for n in range(6, 10, 1):
+                if part_1 == human_1.shapes[n]:
                     human_2.points -= 2  # body 1 blow
 
     def add_blood_handler(object_1, object_2):
@@ -199,7 +201,7 @@ def main_battle(number_of_room):
         handler.separate = count_points
 
     def announce_winner(number_of_human):
-        announcement = font.render('Победил игрок номер ' + str(number_of_human) + '!', True, (255, 255, 255))
+        announcement = great_font.render('Победил игрок номер ' + str(number_of_human) + '!', True, (255, 255, 255))
         screen.blit(announcement, (300, 350))
 
     human_1 = Human(space)
@@ -221,8 +223,8 @@ def main_battle(number_of_room):
                 points_1: [int] - жизни первого человека
                 points_2: [int] - жизни второго человека
         """
-        text_1 = font.render(str(points_1), True, (255, 0, 0))
-        text_2 = font.render(str(points_2), True, (0, 0, 255))
+        text_1 = great_font.render(str(points_1), True, (255, 0, 0))
+        text_2 = great_font.render(str(points_2), True, (0, 0, 255))
         font_exit = pygame.font.SysFont("WeAreDIMDAM", 30)
         text_3 = font_exit.render('В меню', True, (0, 0, 0))
         screen.blit(text_1, (160, 0))
@@ -236,15 +238,15 @@ def main_battle(number_of_room):
     while alive:
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
         human_2.check_event_human(K_w, K_a, K_s, K_d)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for events in pygame.event.get():
+            if events.type == pygame.QUIT:
                 alive = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0] > 460) and (
+            elif events.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0] > 460) and (
                     mouse.get_pos()[0] < 540) and (mouse.get_pos()[1] > 680):
                 alive = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            elif events.type == pygame.KEYDOWN and events.key == pygame.K_ESCAPE:
                 alive = False
-            elif event.type == room.event and type(room) is TypicalWalls:
+            elif events.type == room.event and type(room) is TypicalWalls:
                 if amount <= 0:
                     pygame.time.set_timer(room.event, 0)
 
