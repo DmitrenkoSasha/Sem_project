@@ -35,6 +35,7 @@ def main_battle(number_of_room):
     i = random.randint(0, 7)
 
     bg = bgss[i]
+    bg = pygame.transform.scale(bg, (W, H))
     space = pymunk.Space()
     scale = 1.2
     space.gravity = (0, 100)  #
@@ -209,11 +210,11 @@ def main_battle(number_of_room):
         screen.blit(announcement, (300, 350))
 
     human_1 = Human(space)
-    human_1.create_Human(300, 450)
+    human_1.create_Human(100, 550)
     for shape in human_1.shapes:
         shape.color = pygame.Color('red')
     human_2 = Human(space)
-    human_2.create_Human(700, 450)
+    human_2.create_Human(900, 550)
     for shape in human_2.shapes:
         shape.color = pygame.Color('blue')
 

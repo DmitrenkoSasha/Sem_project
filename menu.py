@@ -59,7 +59,7 @@ class Menu:
         self.images = []
         self.add_image(r'задний план\room_1.jpg', width_1, height_1)
         self.add_image(r'задний план\room_2.jpg', width_1, height_1)
-        self.add_image(r'задний план\room_2.jpg', width_1, height_1)
+        self.add_image(r'задний план\room_3.jpg', width_1, height_1)
         self.add_image(r'задний план\room_4.jpg', width_1, height_1)
         self.add_image(r'задний план\room_5.jpg', width_1, height_1)
 
