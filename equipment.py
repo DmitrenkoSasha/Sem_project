@@ -116,7 +116,7 @@ class Ball(pygame.sprite.Sprite):
 
 class Weight:
     def __init__(self, space, pos_x, pos_y):
-        self.img = pygame.image.load('гиря.png').convert_alpha()
+        self.img = pygame.image.load('задний план\гиря.png').convert_alpha()
 
 
 if __name__ == 'main':

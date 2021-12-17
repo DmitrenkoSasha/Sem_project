@@ -17,7 +17,7 @@ def main_battle(number_of_room):
 
     screen = pygame.display.set_mode((W, H))
 
-    bg1 = pygame.image.load(r'background.png')
+    bg1 = pygame.image.load(r'задний план\background.png')
     bg2 = pygame.image.load(r'задний план\фон2.jpg')
     bg4 = pygame.image.load(r'задний план\фон3.png')
     bg5 = pygame.image.load(r'задний план\фон4.jpg')
@@ -52,7 +52,7 @@ def main_battle(number_of_room):
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
     sound2 = pygame.mixer.Sound('удар по груше.wav')
-    hart_img = pygame.image.load('hart.png')
+    hart_img = pygame.image.load('задний план\hart.png')
     hart_img = pygame.transform.scale(hart_img, (300, 90))
 
     def create_blood(space, center, radius):
