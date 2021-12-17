@@ -99,8 +99,8 @@ def main_battle(number_of_room):
                 for ball in balls:
                     if ball.body.position.y > 700:
                         balls_to_remove.append(ball)
-                    p = tuple(map(int, ball.body.position))
-                    pygame.draw.circle(screen, pygame.Color("blue"), p, int(ball.radius), 2)
+                    pos = (ball.body.position.x, ball.body.position.y)
+                    pygame.draw.circle(screen, pygame.Color("blue"), pos, int(ball.radius), 2)
 
                 for ball in balls_to_remove:
                     space.remove(ball, ball.body)
@@ -242,9 +242,6 @@ def main_battle(number_of_room):
             elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0] > 460) and (
                     mouse.get_pos()[0] < 540) and (mouse.get_pos()[1] > 680):
                 alive = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and (mouse.get_pos()[0] > 460) and (
-                    mouse.get_pos()[0] < 540) and (mouse.get_pos()[1] > 450) and (end == True):
-                pass
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 alive = False
             elif event.type == room.event and type(room) is TypicalWalls:
@@ -271,7 +268,7 @@ def main_battle(number_of_room):
 
         screen.blit(hart_img, (0, -25))
         screen.blit(hart_img, (700, -25))
-        quit_button = pygame.draw.rect(screen, (128, 128, 128), (460, 670, 80, 30))
+        pygame.draw.rect(screen, (128, 128, 128), (460, 670, 80, 30))
         if not end:
             if human_1.points <= 0:
                 human_1.points = 0

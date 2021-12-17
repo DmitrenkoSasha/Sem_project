@@ -37,6 +37,7 @@ class Menu:
         self.show_rooms()
 
     def create_menu_pattern(self):
+        self.window = Tk()
         self.window.title("Stickmen ahead")
         self.window.geometry('1000x700')
         width = 1000
@@ -44,8 +45,7 @@ class Menu:
         img = Image.open(self.background)
         imag = img.resize((width, height), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(imag)
-        panel = Label(self.window, image=photo)
-        panel.pack(side="top", fill="both", expand=0)
+        return photo
 
     def show_menu_2(self):
         """При нажатии на кнопку показывает menu"""
@@ -67,8 +67,9 @@ class Menu:
     def show_rooms(self):
         """Показывает список комнат - rooms"""
         self.window.destroy()
-        self.window = Tk()
-        self.create_menu_pattern()
+        photo = self.create_menu_pattern()
+        panel = Label(self.window, image=photo)
+        panel.pack(side="top", fill="both", expand=0)
         width_1 = 280
         height_1 = round(width_1*0.7)
         self.images = []
@@ -77,42 +78,52 @@ class Menu:
         self.add_image(r'задний план\room_3.jpg', width_1, height_1)
         self.add_image(r'задний план\room_4.jpg', width_1, height_1)
         self.add_image(r'задний план\room_5.jpg', width_1, height_1)
-        Label(width=40, height=2, bg='lightgreen', text="Выберите комнату", font=font.Font(family='Helvetica', size=15)).place(x=290, y=0)
-        Button(self.window, image=self.images[0], width=width_1, height=height_1, command=partial(self.clicked, 0)).place(x=80, y=40)
-        Button(self.window, image=self.images[1], width=width_1, height=height_1, command=partial(self.clicked, 1)).place(x=80+(width_1+10)*1, y=40)
-        Button(self.window, image=self.images[2], width=width_1, height=height_1, command=partial(self.clicked, 2)).place(x=80+(width_1+10)*2, y=40)
-        Button(self.window, image=self.images[3], width=width_1, height=height_1, command=partial(self.clicked, 3)).place(x=80+(width_1+10)*1, y=40+height_1+10)
-        Button(self.window, image=self.images[4], width=width_1, height=height_1, command=partial(self.clicked, 4)).place(x=80+(width_1+10)*1, y=40+height_1*2+20)
-        Button(self.window, text="В меню", bg='lightgreen', font=font.Font(family='Helvetica', size=15), width=20, height=1, command=partial(self.show_menu_2)).place(x=0, y=0)
+        Label(width=40, height=2, bg='lightgreen', text="Выберите комнату",
+              font=font.Font(size=15)).place(x=290, y=0)
+        for i in range(0, 3, 1):
+            Button(self.window, image=self.images[i], width=width_1, height=height_1,
+                   command=partial(self.clicked, i)).place(x=80+(width_1+10)*i, y=40)
+        for i in range(3, 5, 1):
+            Button(self.window, image=self.images[i], width=width_1, height=height_1,
+                   command=partial(self.clicked, i)).place(x=80+(width_1+10)*1, y=40+height_1*(i-2)+10)
+        Button(self.window, text="В меню", bg='lightgreen', width=20, height=1,
+               font=font.Font(size=15), command=partial(self.show_menu_2)).place(x=0, y=0)
         self.window.mainloop()
 
     def show_menu(self):
         """При нажатии на кнопку показывает menu - инициализирующий запуск"""
-        self.create_menu_pattern()
-        Label(width=20, height=3, bg='#f5fb53', text="Stickman ahead", font=font.Font(family='Helvetica', size=40)).place(x=200, y=0)
-        Button(self.window, text="Тренажёрный зал", width=24, height=3, bg=self.color, font=font.Font(family='Helvetica', size=15), command=self.clicked_gym).place(x=370, y=200)
-        Button(self.window, text="Режим PvP", width=24, height=3, bg=self.color, font=font.Font(family='Helvetica', size=15), command=self.clicked_rooms).place(x=370, y=300)
-        Button(self.window, text="Управление", width=24, height=3, bg=self.color, font=font.Font(family='Helvetica', size=15), command=self.clicked_manual).place(x=370, y=400)
-        Button(self.window, text="Выход", width=24, height=3, bg=self.color, font=font.Font(family='Helvetica', size=15), command=self.window.destroy).place(x=370, y=500)
+        photo = self.create_menu_pattern()
+        panel = Label(self.window, image=photo)
+        panel.pack(side="top", fill="both", expand=0)
+        Label(width=20, height=3, bg='#f5fb53', text="Stickman ahead", font=font.Font(size=40)).place(x=200, y=0)
+        Button(self.window, text="Тренажёрный зал", width=24, height=3, bg=self.color,
+               font=font.Font(family='Helvetica', size=15), command=self.clicked_gym).place(x=370, y=200)
+        Button(self.window, text="Режим PvP", width=24, height=3, bg=self.color,
+               font=font.Font(family='Helvetica', size=15), command=self.clicked_rooms).place(x=370, y=300)
+        Button(self.window, text="Управление", width=24, height=3, bg=self.color,
+               font=font.Font(family='Helvetica', size=15), command=self.clicked_manual).place(x=370, y=400)
+        Button(self.window, text="Выход", width=24, height=3, bg=self.color,
+               font=font.Font(family='Helvetica', size=15), command=self.window.destroy).place(x=370, y=500)
         self.window.mainloop()
 
     def show_manual(self):
         """Показывает управление - manual"""
         self.window.destroy()
-        self.window = Tk()
-        self.create_menu_pattern()
+        photo = self.create_menu_pattern()
+        panel = Label(self.window, image=photo)
+        panel.pack(side="top", fill="both", expand=0)
 
-        Label(self.window, bg='#f5fb53', font=font.Font(family='Helvetica', size=15),
+        Label(self.window, bg='#f5fb53', font=font.Font(size=15),
               text="Ваша задача - уничтожить палочного противника раньше, чем он уничтожит вас").place(x=100, y=90)
-        Label(self.window, bg='#f5fb53', font=font.Font(family='Helvetica', size=15),
+        Label(self.window, bg='#f5fb53', font=font.Font(size=15),
               text="Жизни снимаются при попадании в голову и тело").place(x=100, y=120)
-        Label(self.window, bg='#f5fb53', font=font.Font(family='Helvetica', size=15),
+        Label(self.window, bg='#f5fb53', font=font.Font(size=15),
               text="Удачи!").place(x=100, y=150)
-        Label(self.window, bg='#f5fb53', font=font.Font(family='Helvetica', size=15),
+        Label(self.window, bg='#f5fb53', font=font.Font(size=15),
               text="Игрок 1 - стрелки на клавиатуре").place(x=20, y=250)
-        Label(self.window, bg='#f5fb53', font=font.Font(family='Helvetica', size=15),
+        Label(self.window, bg='#f5fb53', font=font.Font(size=15),
               text="Игрок 2 - кнопки WASD").place(x=700, y=250)
-        Button(self.window, font=font.Font(family='Helvetica', size=15),
+        Button(self.window, font=font.Font(size=15),
                text="В меню", command=self.show_menu_2).place(x=0, y=0)
         self.window.mainloop()
 

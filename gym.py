@@ -5,7 +5,6 @@ from pymunk.pygame_util import *
 import pymunk.pygame_util
 import random
 
-
 from equipment import Pear, Ball
 
 
@@ -13,14 +12,14 @@ def main_gym():
     pygame.init()
     alive = True
 
-    WHITE = (255, 255, 255)
-    W = 1000
-    H = 700
-    FPS = 60
+    white = (255, 255, 255)
+    w = 1000
+    h = 700
+    fps = 60
 
     bg = pygame.image.load(r'задний план\background.png')
 
-    screen_gym = pygame.display.set_mode((W, H))
+    screen_gym = pygame.display.set_mode((w, h))
     space_gym = pymunk.Space()
     space_gym.gravity = (0, 900)  # По горизонтали 0, по вертикали 500 в вымышленных единицах
     space_gym.sleep_time_threshold = 0.3
@@ -72,17 +71,23 @@ def main_gym():
                 screen_gym.blit(rotated_logo_img, (round(vec_to_c.x), round(vec_to_c.y)))
                 #  pygame.draw.lines(screen_gym, pygame.Color("red"), False, ps, 1)
 
+    def make_exit_button(screen):
+        pygame.draw.rect(screen, (128, 128, 128), (460, 670, 80, 30))
+        font_exit = pygame.font.SysFont("WeAreDIMDAM", 30)
+        text_exit = font_exit.render('В меню', True, (0, 0, 0))
+        screen.blit(text_exit, (462, 680))
+
     def walls():
-        floor_shape = pymunk.Segment(space_gym.static_body, (0, H), (W, H), 30)
+        floor_shape = pymunk.Segment(space_gym.static_body, (0, h), (w, h), 30)
         space_gym.add(floor_shape)
 
-        left_wall_shape = pymunk.Segment(space_gym.static_body, (0, 0), (0, H), 30)
+        left_wall_shape = pymunk.Segment(space_gym.static_body, (0, 0), (0, h), 30)
         space_gym.add(left_wall_shape)
 
-        right_wall_shape = pymunk.Segment(space_gym.static_body, (W, 0), (W, H), 30)
+        right_wall_shape = pymunk.Segment(space_gym.static_body, (w, 0), (w, h), 30)
         space_gym.add(right_wall_shape)
 
-        roof_shape = pymunk.Segment(space_gym.static_body, (0, 0), (W, 0), 30)
+        roof_shape = pymunk.Segment(space_gym.static_body, (0, 0), (w, 0), 30)
         space_gym.add(roof_shape)
 
     humans = []
@@ -91,10 +96,9 @@ def main_gym():
 
     h1 = Human(space_gym)
     humans.append(h1)
-    h1.create_Human(400, 100, 1)
+    h1.create_human(400, 100, 1)
     walls()
-
-    p1 = Pear(space_gym, 2 * W // 3, H // 2, 'задний план\груша.png', -1, 1)
+    p1 = Pear(space_gym, 2 * w // 3, h // 2, 'задний план\груша.png', -1, 1)
     things.append(p1)
 
     mouse_joint = None
@@ -120,13 +124,15 @@ def main_gym():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 #  Встроенная ф-ция, чтобы переводить коорд. из формата pygame в pymunk
                 p = from_pygame(event.pos, screen_gym)
+                if (pygame.mouse.get_pos()[0] > 460) and (pygame.mouse.get_pos()[0] < 540)\
+                        and (pygame.mouse.get_pos()[1] > 680):
+                    alive = False
                 active_thing = None
                 for thing in things:
                     if type(thing.shape) is pymunk.shapes.Poly:
                         dist = thing.shape.point_query(p)[2]  # Встроенная функция
                         if dist < 0:
                             active_thing = thing
-
                 if mouse_joint is not None:
                     space_gym.remove(mouse_joint)
                     mouse_joint = None
@@ -175,6 +181,8 @@ def main_gym():
                     space_gym.remove(t.shape, t.body)
                     things.remove(t)
 
+
+
         mouse_pos = pygame.mouse.get_pos()
         mouse_body.position = mouse_pos
 
@@ -183,19 +191,21 @@ def main_gym():
 
             f(space_gym)
 
-        space_gym.step(1 / FPS)  # Независимый цикл пересчитывающий физику
-        screen_gym.fill(WHITE)
+        space_gym.step(1 / fps)  # Независимый цикл пересчитывающий физику
+        screen_gym.fill(white)
         screen_gym.blit(bg, (0, 0))
         space_gym.debug_draw(options_gym)
         show_img_things(things)
         screen_gym.blit(pygame.image.load('задний план\мяч.png').convert_alpha(), (img_x, img_y))
+        make_exit_button(screen_gym)
 
         pygame.display.flip()
 
-        dt = clock_gym.tick(FPS)
+        dt = clock_gym.tick(fps)
         total_time += dt / 1000
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     print("This module is not for a straight call!")
