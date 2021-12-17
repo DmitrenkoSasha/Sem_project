@@ -18,7 +18,7 @@ def main_gym():
     H = 700
     FPS = 60
 
-    bg = pygame.image.load(r'background.png')
+    bg = pygame.image.load(r'задний план\background.png')
 
     screen_gym = pygame.display.set_mode((W, H))
     space_gym = pymunk.Space()
@@ -31,7 +31,7 @@ def main_gym():
 
     (img_x, img_y) = (100, 100)
 
-    filename = 'мяч.png'
+    filename = 'задний план\мяч.png'
 
     def sample_func(point):
         try:
@@ -94,7 +94,7 @@ def main_gym():
     h1.create_Human(400, 100, 1)
     walls()
 
-    p1 = Pear(space_gym, 2 * W // 3, H // 2, 'груша.png', -1, 1)
+    p1 = Pear(space_gym, 2 * W // 3, H // 2, 'задний план\груша.png', -1, 1)
     things.append(p1)
 
     mouse_joint = None
@@ -188,7 +188,7 @@ def main_gym():
         screen_gym.blit(bg, (0, 0))
         space_gym.debug_draw(options_gym)
         show_img_things(things)
-        screen_gym.blit(pygame.image.load('мяч.png').convert_alpha(), (img_x, img_y))
+        screen_gym.blit(pygame.image.load('задний план\мяч.png').convert_alpha(), (img_x, img_y))
 
         pygame.display.flip()
 

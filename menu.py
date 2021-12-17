@@ -14,7 +14,7 @@ from PIL import ImageTk, Image
 class Menu:
     def __init__(self):
         self.window = Tk()
-        self.background = r'menu_bg.png'
+        self.background = r'задний план\menu_bg.png'
         self.color = 'lightgreen'
         self.font = font.Font(family='Helvetica', size=20)
         self.images = []
@@ -55,11 +55,11 @@ class Menu:
         width_1 = 280
         height_1 = round(width_1*0.7)
         self.images = []
-        self.add_image(r'room_1.jpg', width_1, height_1)
-        self.add_image(r'room_2.jpg', width_1, height_1)
-        self.add_image(r'room_3.jpg', width_1, height_1)
-        self.add_image(r'room_4.jpg', width_1, height_1)
-        self.add_image(r'room_5.jpg', width_1, height_1)
+        self.add_image(r'задний план\room_1.jpg', width_1, height_1)
+        self.add_image(r'задний план\room_2.jpg', width_1, height_1)
+        self.add_image(r'задний план\room_3.jpg', width_1, height_1)
+        self.add_image(r'задний план\room_4.jpg', width_1, height_1)
+        self.add_image(r'задний план\room_5.jpg', width_1, height_1)
 
         panel = Label(self.window, image=image)
         panel.pack(side="top", fill="both", expand=0)

@@ -125,8 +125,8 @@ class FourExtraWalls:
         left_wall = pymunk.Segment(self.space.static_body, (W * 0.7, H / 2), (W, H / 2), 50)
         self.space.add(left_wall)
 
-        p1 = Pear(self.space, W // 2, H // 2, 'груша.png', self.number, 0.5)
-        p2 = Pear(self.space, W // 2, 27 * H // 40, 'груша.png', self.number, 0.5)
+        p1 = Pear(self.space, W // 2, H // 2, 'задний план\груша.png', self.number, 0.5)
+        p2 = Pear(self.space, W // 2, 27 * H // 40, 'задний план\груша.png', self.number, 0.5)
 
         self.things.append(p1)
         self.things.append(p2)
@@ -139,7 +139,7 @@ class ThreeLevels:
     def __init__(self, space):
         """pos_x: расстояние от левой стены до левого края платформы"""
         self.space = space
-        self.img = pygame.image.load('платформа.png').convert_alpha()
+        self.img = pygame.image.load('задний план\платформа.png').convert_alpha()
         self.width = round(W * 0.7)
         self.height = 50
         self.pos_x = W / 6
@@ -148,7 +148,7 @@ class ThreeLevels:
     def run(self):
         """Запускает процесс создания комнаты. Вызывается в модуле battle_zone"""
         CommonWalls(self.space)
-        line_set = LinesAroundImg('платформа.png', self.width, self.height)
+        line_set = LinesAroundImg('задний план\платформа.png', self.width, self.height)
 
         for line in line_set:
             for i in range(3):  # три платформы
@@ -171,16 +171,16 @@ class RandomCircleRoom:
         self.balls_width = 40
         self.balls_height = 40
         self.stones_coord = []  # Список с координатами шариков, который используется while_rooms_events
-        self.img1 = pygame.image.load('камень коричневый.png').convert_alpha()
-        self.img2 = pygame.image.load('камень серый.png').convert_alpha()
+        self.img1 = pygame.image.load('задний план\камень коричневый.png').convert_alpha()
+        self.img2 = pygame.image.load('задний план\камень серый.png').convert_alpha()
         self.event = None
 
     def run(self):
         """Функция, запускающаяся в battle_zone после создания комнаты"""
         CommonWalls(self.space)
 
-        line_set1 = LinesAroundImg('камень коричневый.png', self.balls_width, self.balls_height)
-        line_set2 = LinesAroundImg('камень серый.png', self.balls_width, self.balls_height)
+        line_set1 = LinesAroundImg('задний план\камень коричневый.png', self.balls_width, self.balls_height)
+        line_set2 = LinesAroundImg('задний план\камень серый.png', self.balls_width, self.balls_height)
 
         #  Каждый круг описываем ломанной
         for i in range(1, self.amount, 1):
