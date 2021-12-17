@@ -4,30 +4,10 @@ import pymunk.pygame_util
 
 
 collision_types = (0, 1, 2, 3)
-''' "head_1": 0,
-    "body_1": 1,
-    "right_arm_1": 2,
-    "right_hand_1": 3,
-    "left_arm_1": 4,
-    "left_hand_1": 5,
-    "right_leg_1": 6,
-    "right_feet_1": 7,
-    "left_leg_1": 8,
-    "left_feet_1": 9,
 
-    "head_2": 10,
-    "body_2": 11,
-    "right_arm_2": 12,
-    "right_hand_2": 13,
-    "left_arm_2": 14,
-    "left_hand_2": 15,
-    "right_leg_2": 16,
-    "right_feet_2": 17,
-    "left_leg_2": 18,
-    "left_feet_2": 19'''
 
 class Human:
-    '''Класс, отвечающий за создание палочных людей. Таковые создаются в модулях gym и battle_zone'''
+    """Класс, отвечающий за создание палочных людей. Таковые создаются в модулях gym и battle_zone"""
     def __init__(self, space):
         """ Конструктор класса Human
 
@@ -36,6 +16,7 @@ class Human:
         """
         self.space = space
         self.shapes = []
+        self.complect = []
         self.points = 0
         self.scale = 1
 
@@ -65,12 +46,12 @@ class Human:
         self.space.add(body, shape)
         return body
 
-    def create_Human(self, x, y, scale = 1):
+    def create_human(self, x, y, scale=1):
         """ Создаёт человека поэлементно, с добавлением суставов и пружин
             Args:
                 x: [float] - x-координата человека  # TODO какая координата?
                 y: [float] - y-координата человека
-                i: [int] - параметр, отвечающий за определение типов столкновения collision_types
+                scale: [int] - параметр, отвечающий за размер человека
         """
         head = self.add_lever((x, y), (0, -30 * scale), (0, -32 * scale), 18, 1, 1021, 0)
         telo = self.add_lever((x, y), (0, 30 * scale), (0, -30 * scale), 6, 2, 682, 1)

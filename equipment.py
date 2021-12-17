@@ -1,6 +1,6 @@
-import pygame
+import pygame  # sprites, transform, images
 import pymunk
-import math
+from math import degrees
 from pymunk.vec2d import Vec2d
 
 
@@ -22,11 +22,11 @@ class Pear(pygame.sprite.Sprite):
         self.x, self.y = x, y
         self.mass = 50
         self.destinationroom = numroom
-        self.body = self.AddBodyPear()
-        self.shape = self.AddShapePear()
+        self.body = self.add_body_pear()
+        self.shape = self.add_shape_pear()
         self.filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1)
 
-    def AddBodyPear(self):
+    def add_body_pear(self):
         """Добавляет тело груши и точку вращения. Вызывается внутри класса Pear"""
 
         moment = pymunk.moment_for_poly(self.mass, self.vs)
@@ -50,7 +50,7 @@ class Pear(pygame.sprite.Sprite):
 
         return body
 
-    def AddShapePear(self):
+    def add_shape_pear(self):
         """Добавляет форму для груши. Вызывается внутри класса Pear"""
         shape = pymunk.Poly(self.body, self.vs)
         shape.friction = 1
@@ -69,7 +69,7 @@ class Pear(pygame.sprite.Sprite):
         vec_rot = Vec2d(vec_rot.x, vec_rot.y)
 
         # Нужно повернуть на 180 градусов
-        angle_degrees = -math.degrees(self.shape.body.angle)
+        angle_degrees = -degrees(self.shape.body.angle)
         rotated_img = pygame.transform.rotate(self.image, angle_degrees)
         if self.destinationroom == 1:
             rotated_img = pygame.transform.scale(rotated_img, (round(rotated_img.get_rect().size[0] * self.scale),
@@ -115,8 +115,8 @@ class Ball(pygame.sprite.Sprite):
 
 
 class Weight:
-    def __init__(self, space, pos_x, pos_y):
-        self.img = pygame.image.load('задний план\гиря.png').convert_alpha()
+    def __init__(self):
+        self.img = pygame.image.load('задний план\\гиря.png').convert_alpha()
 
 
 if __name__ == 'main':
