@@ -200,11 +200,11 @@ def main_battle(number_of_room):
         screen.blit(announcement, (300, 350))
 
     human_1 = Human(space)
-    human_1.create_human(100, 550)
+    human_1.create_human(100, 600)
     for shape in human_1.shapes:
         shape.color = pygame.Color('red')
     human_2 = Human(space)
-    human_2.create_human(900, 550)
+    human_2.create_human(900, 600)
     for shape in human_2.shapes:
         shape.color = pygame.Color('blue')
 
@@ -227,7 +227,7 @@ def main_battle(number_of_room):
 
     room = create_room(space, number_of_room)  # сюда обращаться за нужной комнатой
 
-    amount = room.run()
+    room.run()
 
     while alive:
         human_1.check_event_human(K_UP, K_LEFT, K_DOWN, K_RIGHT)
@@ -240,20 +240,6 @@ def main_battle(number_of_room):
                 alive = False
             elif events.type == pygame.KEYDOWN and events.key == pygame.K_ESCAPE:
                 alive = False
-            elif events.type == room.event and type(room) is TypicalWalls:
-                if amount <= 0:
-                    pygame.time.set_timer(room.event, 0)
-
-                amount -= 1
-                mass = 3
-                radius = 8
-                moment = pymunk.moment_for_circle(mass, 0, radius)
-                b = pymunk.Body(mass, moment)
-                c = pymunk.Circle(b, radius)
-                c.friction = 1
-                b.position = randint(100, 400), 0
-
-                space.add(b, c)
 
         screen.fill(white)
         screen.blit(bg, (0, 0))

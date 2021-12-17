@@ -158,7 +158,7 @@ class ThreeLevels:
 class RandomCircleRoom:
     def __init__(self, space):
         self.space = space
-        self.amount = 15
+        self.amount = 30
         self.balls_width = 40
         self.balls_height = 40
         self.stones_coord = []  # Список с координатами шариков, который используется while_rooms_events
@@ -258,3 +258,6 @@ def create_room(space, number_of_room):
 
     if number_of_room == 4:
         return ReverseGravity(space)
+
+if __name__ == 'main':
+    print("This module is not for direct call!")
